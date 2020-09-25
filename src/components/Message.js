@@ -45,11 +45,13 @@ const useStyles = makeStyles((theme) => ({
 
 function Message(props) {
   const classes = useStyles(props);
+  let sent = moment.utc(props.message.sent);
+  sent = sent.local().calendar();
 
   return (
     <div className={classes.conversationItem}>
       <div className={classes.bubble}>{props.message.body}</div>
-      <div className={classes.timeStamp}>{moment(props.message.sent).calendar()}</div>
+      <div className={classes.timeStamp}>{sent}</div>
     </div>
   );
 }

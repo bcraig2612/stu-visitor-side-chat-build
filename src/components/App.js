@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Pusher from 'pusher-js';
+import moment from "moment";
 
 import ChatWindow from './ChatWindow';
 import ChatToggle from './ChatToggle';
@@ -63,6 +64,15 @@ function App() {
   function loadConversation(jwt) {
     postData(apiURL + 'api/get_conversation.php', {jwt: jwt })
       .then(data => {
+        // check for errors
+        console.log(data);
+        if (data.error && data.errorType === 'INVALID_TOKEN') {
+          alert('Invalid token');
+          localStorage.clear();
+          window.location.reload();
+          return;
+        }
+
         setChannelName(data.conversation.channel_name);
         setMessages(messages => [...messages, ...data.messages]);
 
@@ -77,7 +87,7 @@ function App() {
           if (data.clientIdentifier === clientIdentifier) {
             return false;
           }
-          setMessages(messages => [...messages, {id: Date.now(), sent_by_visitor: data.sent_by_visitor, body: data.body, sent: Date(data.sent).toString()}]);
+          setMessages(messages => [...messages, {id: Date.now(), sent_by_visitor: data.sent_by_visitor, body: data.body, sent: moment(data.sent)}]);
         });
 
       });
@@ -89,8 +99,7 @@ function App() {
 
   function handleNewMessage() {
     if (composeMessageValue.length) {
-      const time = new Date();
-      setMessages([...messages, {id: Date.now(), sent_by_visitor: true, body: composeMessageValue, sent: time.toISOString()}]);
+      setMessages([...messages, {id: Date.now(), sent_by_visitor: true, body: composeMessageValue, sent: moment()}]);
       setComposeMessageValue('');
       sendMessageToSoTellUs(composeMessageValue);
     }

@@ -47,6 +47,10 @@ function App() {
   function onStartChatFormSubmit(values) {
     postData(apiURL + 'api/create_conversation.php', {name: values.name, phone_number: values.phone_number, message: values.message, clientIdentifier: clientIdentifier})
       .then(data => {
+        if (data.error) {
+          alert(data.message);
+          return;
+        }
         setLocalStorage('stu_jwt', data.token, 'set_stu_jwt');
         setAccessToken(data.token);
         setChannelName(data.channel_name);
@@ -58,7 +62,18 @@ function App() {
     postData(apiURL + 'api/pusher.php', {jwt: accessToken, body: text, clientIdentifier: clientIdentifier, sent_by_visitor: 1 })
       .then(data => {
         console.log(data); // JSON data parsed by `data.json()` call
+        if (data.error && data.errorType === 'INVALID_TOKEN') {
+          handleInvalidToken();
+          return;
+        }
       });
+  }
+
+  // if token is invalid clear localStorage and refresh window
+  function handleInvalidToken() {
+    alert('Invalid token');
+    localStorage.clear();
+    window.location.reload();
   }
 
   function loadConversation(jwt) {
@@ -67,9 +82,7 @@ function App() {
         // check for errors
         console.log(data);
         if (data.error && data.errorType === 'INVALID_TOKEN') {
-          alert('Invalid token');
-          localStorage.clear();
-          window.location.reload();
+          handleInvalidToken();
           return;
         }
 
@@ -87,7 +100,8 @@ function App() {
           if (data.clientIdentifier === clientIdentifier) {
             return false;
           }
-          setMessages(messages => [...messages, {id: Date.now(), sent_by_visitor: data.sent_by_visitor, body: data.body, sent: moment(data.sent)}]);
+          console.log(data);
+          setMessages(messages => [...messages, {id: Date.now(), sent_by_visitor: data.sent_by_visitor, body: data.body, sent: data.sent}]);
         });
 
       });

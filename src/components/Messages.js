@@ -1,6 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import Message from "./Message";
+import Skeleton from "@material-ui/lab/Skeleton";
 
 const useStyles = makeStyles((theme) => ({
   messages: {
@@ -22,7 +23,17 @@ function Messages(props) {
     messagesEnd.current.scrollIntoView({behavior: "smooth"});
   });
 
-  const messages = props.messages.map(message => <Message key={message.id} message={message} />);
+  let messages = props.messages.map(message => <Message key={message.id} message={message} />);
+
+  if (props.isLoadingConversation) {
+    messages = (
+      <React.Fragment>
+        <Skeleton variant="text" height="50px" />
+        <Skeleton variant="text" height="50px" />
+        <Skeleton variant="text" height="50px" />
+      </React.Fragment>
+    );
+  }
 
   const classes = useStyles();
 

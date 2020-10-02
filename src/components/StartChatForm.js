@@ -22,19 +22,15 @@ const useStyles = makeStyles((theme) => ({
 
 function StartChatForm(props) {
   const classes = useStyles();
-  const { register, handleSubmit, errors, formState } = useForm({mode: 'onSubmit'});
-
-  // Read the formState before render to subscribe the form state through Proxy
-  const { isDirty, isSubmitting } = formState;
+  const { register, handleSubmit, errors } = useForm();
 
   const onSubmit = values => {
-    setTimeout(() => console.log(values), 1000);
-    // props.onStartChatFormSubmit(values);
+    props.onStartChatFormSubmit(values);
   }
 
   return (
     <div className={classes.startChatForm}>
-      <p>Fill out the form to start chatting! {isSubmitting ? 'Loading..' : 'Start Chat'}</p>
+      <p>Fill out the form to start chatting!</p>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           inputProps={{ 'name': 'name' }}
@@ -80,12 +76,12 @@ function StartChatForm(props) {
           helperText={errors.message && errors.message.message ? errors.message.message : ''}
         />
         <Button
-          disabled={isSubmitting}
+          disabled={props.isSubmitting}
           type="submit"
           size="large"
           fullWidth={true}
           variant="contained"
-          color="primary">{isSubmitting ? 'Loading..' : 'Start Chat'}</Button>
+          color="primary">{props.isSubmitting ? 'Loading..' : 'Start Chat'}</Button>
       </form>
     </div>
   );

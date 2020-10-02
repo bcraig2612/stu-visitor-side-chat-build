@@ -52,8 +52,8 @@ function ChatWindow(props) {
           <div className={classes.title}>Live Chat</div>
           <CloseIcon className={classes.headerAction} onClick={() => props.handleChatWindowToggle(true)}  />
         </div>
-        {!props.accessToken && <StartChatForm onStartChatFormSubmit={props.onStartChatFormSubmit} />}
-        {props.accessToken && <Messages messages={props.messages} />}
+        {!props.accessToken && <StartChatForm isSubmitting={props.isSubmitting} onStartChatFormSubmit={props.onStartChatFormSubmit} />}
+        {props.accessToken && <Messages isLoadingConversation={props.isLoadingConversation} messages={props.messages} />}
         {props.accessToken && <Footer handleNewMessage={props.handleNewMessage} composeMessageValue={props.composeMessageValue} handleComposeMessageChange={props.handleComposeMessageChange} />}
       </div>
   );
@@ -77,8 +77,8 @@ function ChatWindow(props) {
             {/*  />*/}
             <CloseIcon className={classes.headerAction} onClick={() => props.handleChatWindowToggle(true)}  />
           </div>
-          {!props.accessToken && <StartChatForm onStartChatFormSubmit={props.onStartChatFormSubmit} />}
-          {props.accessToken && <Messages messages={props.messages} />}
+          {!props.accessToken && <StartChatForm isSubmitting={props.isSubmitting} onStartChatFormSubmit={props.onStartChatFormSubmit} />}
+          {props.accessToken && <Messages isLoadingConversation={props.isLoadingConversation} messages={props.messages} />}
           {props.accessToken && <Footer handleNewMessage={props.handleNewMessage} composeMessageValue={props.composeMessageValue} handleComposeMessageChange={props.handleComposeMessageChange} />}
         </div>
       </Slide>

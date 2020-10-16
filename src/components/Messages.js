@@ -2,6 +2,7 @@ import React, {useEffect, useRef} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import Message from "./Message";
 import Skeleton from "@material-ui/lab/Skeleton";
+import TypingIndicator from "./TypingIndicator";
 
 const useStyles = makeStyles((theme) => ({
   messages: {
@@ -40,6 +41,7 @@ function Messages(props) {
   return (
     <div className={classes.messages}>
       {messages}
+      {props.showTypingIndicator == true && <TypingIndicator />}
       <div style={{float: "left", clear: "both"}}
            ref={messagesEnd}>
       </div>

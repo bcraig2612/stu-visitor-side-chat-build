@@ -10,12 +10,14 @@ import notificationMP3 from "../notification.mp3";
 // this will identify the client we are on
 // so we don't show duplicate messages from pusher
 const clientIdentifier = Date.now();
-const apiURL = 'http://localhost:9000/';
+const apiURL = 'https://dev01.sotellus.com/API/chat/';
 
 // play alert sound
 function newMessageAlert() {
   const audio = new Audio(notificationMP3);
-  audio.play();
+  audio.play().catch(() => {
+    console.log('error playing audio');
+  });
 }
 
 function App() {
@@ -23,15 +25,22 @@ function App() {
   const [chatClosed, setChatClosed] = useState(isIframe);
   const [composeMessageValue, setComposeMessageValue] = useState('');
   const [accessToken, setAccessToken] = useState('');
-  const [channelName, setChannelName] = useState('');
+  const [formError, setFormError] = useState('');
+  const [conversation, setConversation] = useState({});
   const [messages, setMessages] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showTypingIndicator, setShowTypingIndicator] = useState(false);
+  const [smsOptInSubmitting, setSmsOptInSubmitting] = useState(false);
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
 
   // connect to pusher
   useEffect(() => {
+    if (!isIframe) {
+      return;
+    }
+
     // check to see if token is in storage
-    const jwt = getLocalStorage();
+    const jwt = getLocalStorage('stu_jwt');
     if (jwt) {
       console.log('Token was in storage: ' + jwt);
       setAccessToken(jwt);
@@ -40,8 +49,16 @@ function App() {
 
   }, []);
 
-  function getLocalStorage() {
-    return localStorage.getItem('stu_jwt');
+  function reloadConversation() {
+    const jwt = getLocalStorage('stu_jwt');
+    if (jwt) {
+      setAccessToken(jwt);
+      loadConversation(jwt);
+    }
+  }
+
+  function getLocalStorage(key) {
+    return localStorage.getItem(key);
   }
 
   function setLocalStorage(key, value, action) {
@@ -55,70 +72,189 @@ function App() {
 
   function onStartChatFormSubmit(values) {
     setIsSubmitting(true);
+    const requestData = {client_id: 1210, name: values.name, email_address: values.email_address, body: values.message, clientIdentifier: clientIdentifier};
 
-    postData(apiURL + 'api/create_conversation.php', {name: values.name, phone_number: values.phone_number, message: values.message, clientIdentifier: clientIdentifier})
-      .then(data => {
-        setIsSubmitting(false);
-
-        if (data.error) {
-          return false;
+    fetch(apiURL + 'initializeConversation/', {
+      method: "POST",
+      withCredentials: true,
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestData)
+    })
+      .then(response => Promise.all([response, response.json()]))
+      .then(([response, json]) => {
+        if (response.status < 200 || response.status >= 300) {
+          let error = new Error(json.message);
+          error.response = response;
+          throw error;
         }
-        setLocalStorage('stu_jwt', data.token, 'set_stu_jwt');
-        setAccessToken(data.token);
-        setChannelName(data.channel_name);
-        loadConversation(data.token);
+
+        setIsSubmitting(false);
+        setLocalStorage('stu_jwt', json.data.token, 'set_stu_jwt');
+        setLocalStorage('stu_conversation_id', json.data.conversationID, 'set_stu_jwt');
+        setAccessToken(json.data.token);
+        setConversation({id: json.data.conversationID, channel_name: json.data.channel_name, active: 1});
+        loadConversation(json.data.token, json.data.conversationID)
+      })
+      .catch(function(ex) {
+        setIsSubmitting(false);
+        setFormError(ex.message);
       });
   }
 
-  function sendMessageToSoTellUs(text) {
-    postData(apiURL + 'api/pusher.php', {jwt: accessToken, body: text, clientIdentifier: clientIdentifier, sent_by_visitor: 1 })
-      .then(data => {
-        console.log(data); // JSON data parsed by `data.json()` call
-        if (data.error && data.errorType === 'INVALID_TOKEN') {
-          handleInvalidToken();
+  function smsOptIn(phoneNumber)
+  {
+    setSmsOptInSubmitting(true);
+    const requestData = {conversationID: conversation.id, phone_number: phoneNumber};
+    fetch(apiURL + 'smsOptIn/', {
+      method: "POST",
+      withCredentials: true,
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestData)
+    })
+      .then(response => Promise.all([response, response.json()]))
+      .then(([response, json]) => {
+        console.log(json);
+        if (response.status < 200 || response.status >= 300) {
+          let error = new Error(json.message);
+          error.response = response;
+          throw error;
         }
+
+        setSmsOptInSubmitting(false);
+        setConversation(json.data.conversation);
+
+      })
+      .catch(function(ex) {
+        setSmsOptInSubmitting(false);
+        alert('error');
       });
+  }
+
+  function setConversationToClosed()
+  {
+    const requestData = {conversationID: conversation.id};
+    fetch(apiURL + 'setConversationToClosed/', {
+      method: "POST",
+      withCredentials: true,
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestData)
+    })
+      .then(response => Promise.all([response, response.json()]))
+      .then(([response, json]) => {
+        console.log(json);
+        if (response.status < 200 || response.status >= 300) {
+          let error = new Error(json.message);
+          error.response = response;
+          throw error;
+        }
+
+        setConversation(json.data.conversation);
+
+      })
+      .catch(function(ex) {
+        alert('error');
+      });
+  }
+
+  function sendMessageToSoTellUs(text, tempID) {
+    const requestData = {clientIdentifier: clientIdentifier, conversationID: conversation.id, body: text};
+    fetch(apiURL + 'messages/', {
+      method: "POST",
+      withCredentials: true,
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestData)
+    })
+      .then(response => Promise.all([response, response.json()]))
+      .then(([response, json]) => {
+        if (response.status < 200 || response.status >= 300) {
+          let error = new Error(json.message);
+          error.response = response;
+          throw error;
+        }
+      })
+      .catch(function(ex) {
+        let updatedMessages = [];
+
+        setMessages((state) => {
+          updatedMessages = [...state];
+          return state;
+        });
+        const foundIndex = updatedMessages.findIndex(x => x.id === tempID);
+        console.log(tempID, updatedMessages)
+        updatedMessages[foundIndex].error = true;
+        setMessages(updatedMessages);
+      });
+
   }
 
   // if token is invalid clear localStorage and refresh window
   function handleInvalidToken() {
     localStorage.clear();
-    window.location.reload();
+    setAccessToken('');
   }
 
-  function loadConversation(jwt) {
+  function loadConversation(jwt, conversationID) {
+    const storedConversationID = getLocalStorage('stu_conversation_id');
+    if (storedConversationID) {
+      conversationID = storedConversationID;
+    }
+
     setIsLoadingConversation(true);
-    postData(apiURL + 'api/get_conversation.php', {jwt: jwt })
-      .then(data => {
-        // check for errors
-        if (data.errorType === 'INVALID_TOKEN') {
-          handleInvalidToken();
-          setIsLoadingConversation(false);
-          return;
-        }
-
+    fetch(apiURL + 'messages/?conversationID=' + conversationID, {
+      method: "GET",
+      withCredentials: true,
+      headers: {
+        'Authorization': 'Bearer ' + jwt,
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json())
+      .then(response => {
+        console.log(response);
         setIsLoadingConversation(false);
-
-        setChannelName(data.conversation.channel_name);
-        setMessages(messages => [...messages, ...data.messages]);
-
+        setConversation(response.data.conversation);
+        setMessages(messages => [...messages, ...response.data.messages]);
         // set up pusher
         Pusher.logToConsole = true;
         const pusher = new Pusher('66e7f1b4416d81db9385', {
-          cluster: 'us3'
+          cluster: 'us3',
+          authEndpoint: 'https://dev01.sotellus.com/API/chat/pusherAuthentication/',
+          auth: {
+            headers: {
+              Authorization: 'Bearer ' + jwt,
+            }
+          }
         });
 
-        let channel = pusher.subscribe(data.conversation.channel_name);
+        let channel = pusher.subscribe(response.data.conversation.channel_name);
         channel.bind('new-message', function(data) {
           if (data.clientIdentifier === clientIdentifier) {
             return false;
           }
-          console.log(data);
           newMessageAlert();
           setChatClosed(false);
-          setMessages(messages => [...messages, {id: Date.now(), sent_by_visitor: data.sent_by_visitor, body: data.body, sent: data.sent}]);
+          setMessages(messages => [...messages, {id: Date.now(), sent_by_contact: data.sent_by_contact, body: data.body, sent: data.sent}]);
         });
 
+        channel.bind('client-typing', function(data) {
+          setChatClosed(false);
+          setShowTypingIndicator(true);
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        handleInvalidToken();
       });
   }
 
@@ -128,14 +264,19 @@ function App() {
 
   function handleNewMessage() {
     if (composeMessageValue.length) {
-      setMessages([...messages, {id: Date.now(), sent_by_visitor: true, body: composeMessageValue, sent: moment()}]);
+      const tempID = Date.now();
+      setMessages([...messages, {id: tempID, sent_by_contact: true, body: composeMessageValue, sent: moment().unix()}]);
       setComposeMessageValue('');
-      sendMessageToSoTellUs(composeMessageValue);
+      sendMessageToSoTellUs(composeMessageValue, tempID);
     }
   }
 
   function handleChatWindowToggle(closeChat) {
     setChatClosed(closeChat);
+  }
+
+  if (!isIframe) {
+    return (<p style={{textAlign: "center"}}>Not authorized.</p>);
   }
 
   return (
@@ -152,6 +293,14 @@ function App() {
         onStartChatFormSubmit={onStartChatFormSubmit}
         isSubmitting={isSubmitting}
         isLoadingConversation={isLoadingConversation}
+        formError={formError}
+        conversation={conversation}
+        reloadConversation={reloadConversation}
+        smsOptIn={smsOptIn}
+        smsOptInSubmitting={smsOptInSubmitting}
+        setConversationToClosed={setConversationToClosed}
+        handleInvalidToken={handleInvalidToken}
+        showTypingIndicator={showTypingIndicator}
       />
       {isIframe ? <ChatToggle handleChatWindowToggle={handleChatWindowToggle} chatClosed={chatClosed} /> : null }
     </div>

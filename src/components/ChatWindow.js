@@ -6,6 +6,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Footer from './Footer';
 import StartChatForm from "./StartChatForm";
 import Messages from "./Messages";
+import WaitingOnAgent from "./WaitingOnAgent";
+import ChatComplete from "./ChatComplete";
 
 const useStyles = makeStyles((theme) => ({
   header: props => ({
@@ -52,6 +54,8 @@ function ChatWindow(props) {
           <div className={classes.title}>Live Chat</div>
           <CloseIcon className={classes.headerAction} onClick={() => props.handleChatWindowToggle(true)}  />
         </div>
+        <WaitingOnAgent closeWindow={() => props.handleChatWindowToggle(true)} />
+
         {!props.accessToken && <StartChatForm isSubmitting={props.isSubmitting} onStartChatFormSubmit={props.onStartChatFormSubmit} />}
         {props.accessToken && <Messages isLoadingConversation={props.isLoadingConversation} messages={props.messages} />}
         {props.accessToken && <Footer handleNewMessage={props.handleNewMessage} composeMessageValue={props.composeMessageValue} handleComposeMessageChange={props.handleComposeMessageChange} />}
@@ -77,9 +81,11 @@ function ChatWindow(props) {
             {/*  />*/}
             <CloseIcon className={classes.headerAction} onClick={() => props.handleChatWindowToggle(true)}  />
           </div>
-          {!props.accessToken && <StartChatForm isSubmitting={props.isSubmitting} onStartChatFormSubmit={props.onStartChatFormSubmit} />}
-          {props.accessToken && <Messages isLoadingConversation={props.isLoadingConversation} messages={props.messages} />}
-          {props.accessToken && <Footer handleNewMessage={props.handleNewMessage} composeMessageValue={props.composeMessageValue} handleComposeMessageChange={props.handleComposeMessageChange} />}
+          {props.accessToken.length > 0 && (props.conversation.active === 0) && (props.conversation.accepted === 1) && <ChatComplete handleInvalidToken={props.handleInvalidToken} />}
+          {props.accessToken.length > 0 && (props.conversation.accepted === 0) && <WaitingOnAgent setConversationToClosed={props.setConversationToClosed} smsOptInSubmitting={props.smsOptInSubmitting} smsOptIn={props.smsOptIn} reloadConversation={props.reloadConversation} conversation={props.conversation} closeWindow={() => props.handleChatWindowToggle(true)} />}
+          {!props.accessToken.length > 0 && <StartChatForm formError={props.formError} isSubmitting={props.isSubmitting} onStartChatFormSubmit={props.onStartChatFormSubmit} />}
+          {props.accessToken.length > 0 && (props.conversation.active === 1) && (props.conversation.accepted === 1) && <Messages showTypingIndicator={props.showTypingIndicator} isLoadingConversation={props.isLoadingConversation} messages={props.messages} />}
+          {props.accessToken.length > 0 && (props.conversation.active === 1) && (props.conversation.accepted === 1) && <Footer handleNewMessage={props.handleNewMessage} composeMessageValue={props.composeMessageValue} handleComposeMessageChange={props.handleComposeMessageChange} />}
         </div>
       </Slide>
     );

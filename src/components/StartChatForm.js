@@ -3,6 +3,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { useForm } from "react-hook-form";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   startChatForm: {
@@ -33,10 +34,11 @@ function StartChatForm(props) {
       <p>Fill out the form to start chatting!</p>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
-          inputProps={{ 'name': 'name' }}
+          inputProps={{ 'name': 'name', maxLength: 300 }}
           inputRef={register({
             required: "Required",
-            minLength: "3"
+            minLength: 1,
+            maxLength: 300
           })}
           fullWidth={true}
           className={classes.chatFormInput}
@@ -44,27 +46,31 @@ function StartChatForm(props) {
           label="Name"
           variant="outlined"
           error={!!errors.name}
-          helperText={errors.name && errors.name.message ? errors.name.message : ''}
+          aria-invalid={errors.name ? "true" : "false"}
+          helperText={errors.name ? 'Please enter your name.' : ''}
         />
         <TextField
-          inputProps={{ 'name': 'phone_number' }}
+          inputProps={{ 'name': 'email_address', maxLength: 320 }}
           inputRef={register({
             required: "Required",
-            minLength: "3"
+            minLength: 3,
+            maxLength: 320
           })}
           fullWidth={true}
           className={classes.chatFormInput}
-          label="Phone number"
+          label="Email address"
           variant="outlined"
-          error={!!errors.phone_number}
-          helperText={errors.phone_number && errors.phone_number.message ? errors.phone_number.message : ''}
+          error={!!errors.email_address}
+          aria-invalid={errors.email_address ? "true" : "false"}
+          helperText={errors.email_address ? 'Invalid email address.' : ''}
         />
 
         <TextField
-          inputProps={{ 'name': 'message' }}
+          inputProps={{ 'name': 'message', maxLength: 300 }}
           inputRef={register({
             required: "Required",
-            minLength: "3"
+            minLength: 1,
+            maxLength: 300
           })}
           multiline
           rowsMax={4}
@@ -82,6 +88,7 @@ function StartChatForm(props) {
           fullWidth={true}
           variant="contained"
           color="primary">{props.isSubmitting ? 'Loading..' : 'Start Chat'}</Button>
+        {props.formError && <Alert severity="error" style={{width: "100%", marginTop: "10px"}}>{props.formError}</Alert>}
       </form>
     </div>
   );

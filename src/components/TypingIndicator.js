@@ -1,5 +1,7 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import Skeleton from "@material-ui/lab/Skeleton";
 
 const useStyles = makeStyles((theme) => ({
   message: props => ({
@@ -26,13 +28,16 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgb(244, 246, 249)",
     borderRadius: "26px 26px 26px 3px",
     padding: "12px 20px",
-    display: "inline-block",
+    display: "flex",
     maxWidth: "54%",
     overflowWrap: "break-word",
     lineHeight: "1.4",
     fontSize: "14px",
     position: "relative",
     marginBottom: "3px",
+    width: "70px",
+    alignItems: "center",
+    justifyContent: "center"
   }),
 }));
 
@@ -41,7 +46,7 @@ function TypingIndicator(props) {
 
   return (
     <div className={classes.conversationItem}>
-      <div className={classes.bubble}>Typing</div>
+      <Skeleton variant="rect" className={classes.bubble}><MoreHorizIcon style={{visibility: "visible"}} /></Skeleton>
     </div>
   );
 }

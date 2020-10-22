@@ -8,6 +8,7 @@ import StartChatForm from "./StartChatForm";
 import Messages from "./Messages";
 import WaitingOnAgent from "./WaitingOnAgent";
 import ChatComplete from "./ChatComplete";
+import ChatAgent from "./ChatAgent";
 
 const useStyles = makeStyles((theme) => ({
   header: props => ({
@@ -34,7 +35,8 @@ const useStyles = makeStyles((theme) => ({
     width: props.isIframe ? "286px" : "100%",
     zIndex: "2000",
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
+    background: "#fff",
   }),
   headerAction: {
     cursor: "pointer",
@@ -72,7 +74,12 @@ function ChatWindow(props) {
       >
         <div className={classes.chatWindow}>
           <div className={classes.header}>
-            <div className={classes.title}>Live Chat</div>
+            {props.accessToken.length > 0 && (props.conversation.active == 1) && (props.conversation.accepted == 1) && (
+              <div className={classes.title}><ChatAgent /></div>
+            ) }
+            {(!props.accessToken.length > 0 || (props.conversation.accepted == 0) || (props.conversation.active == 0)) && (
+              <div className={classes.title}>Live Chat</div>
+            ) }
             {/*<CallMadeIcon*/}
             {/*  className={classes.headerAction}*/}
             {/*  onClick={() => {*/}
@@ -81,11 +88,11 @@ function ChatWindow(props) {
             {/*  />*/}
             <CloseIcon className={classes.headerAction} onClick={() => props.handleChatWindowToggle(true)}  />
           </div>
-          {props.accessToken.length > 0 && (props.conversation.active === 0) && (props.conversation.accepted === 1) && <ChatComplete handleInvalidToken={props.handleInvalidToken} />}
-          {props.accessToken.length > 0 && (props.conversation.accepted === 0) && <WaitingOnAgent setConversationToClosed={props.setConversationToClosed} smsOptInSubmitting={props.smsOptInSubmitting} smsOptIn={props.smsOptIn} reloadConversation={props.reloadConversation} conversation={props.conversation} closeWindow={() => props.handleChatWindowToggle(true)} />}
+          {props.accessToken.length > 0 && (props.conversation.active == 0) && (props.conversation.accepted == 1) && <ChatComplete handleInvalidToken={props.handleInvalidToken} />}
+          {props.accessToken.length > 0 && (props.conversation.accepted == 0) && <WaitingOnAgent setConversationToClosed={props.setConversationToClosed} smsOptInSubmitting={props.smsOptInSubmitting} smsOptIn={props.smsOptIn} reloadConversation={props.reloadConversation} conversation={props.conversation} closeWindow={() => props.handleChatWindowToggle(true)} />}
           {!props.accessToken.length > 0 && <StartChatForm formError={props.formError} isSubmitting={props.isSubmitting} onStartChatFormSubmit={props.onStartChatFormSubmit} />}
-          {props.accessToken.length > 0 && (props.conversation.active === 1) && (props.conversation.accepted === 1) && <Messages showTypingIndicator={props.showTypingIndicator} isLoadingConversation={props.isLoadingConversation} messages={props.messages} />}
-          {props.accessToken.length > 0 && (props.conversation.active === 1) && (props.conversation.accepted === 1) && <Footer handleNewMessage={props.handleNewMessage} composeMessageValue={props.composeMessageValue} handleComposeMessageChange={props.handleComposeMessageChange} />}
+          {props.accessToken.length > 0 && (props.conversation.active == 1) && (props.conversation.accepted == 1) && <Messages showTypingIndicator={props.showTypingIndicator} isLoadingConversation={props.isLoadingConversation} messages={props.messages} />}
+          {props.accessToken.length > 0 && (props.conversation.active == 1) && (props.conversation.accepted == 1) && <Footer handleNewMessage={props.handleNewMessage} composeMessageValue={props.composeMessageValue} handleComposeMessageChange={props.handleComposeMessageChange} />}
         </div>
       </Slide>
     );

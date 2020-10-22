@@ -35,7 +35,6 @@ function WaitingOnAgent(props) {
   useEffect(() => {
     if (props.conversation.active) {
       const timer = setInterval(() => {
-        console.log('timer called');
         props.setConversationToClosed();
       }, 10000);
 

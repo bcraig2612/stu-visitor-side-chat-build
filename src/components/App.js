@@ -15,10 +15,13 @@ const apiURL = 'https://dev01.sotellus.com/API/chat/';
 // play alert sound
 function newMessageAlert() {
   const audio = new Audio(notificationMP3);
-  audio.play().catch(() => {
-    console.log('error playing audio');
+  window.focus();
+  audio.play().catch((err) => {
+    console.log(err);
   });
 }
+
+let pusher = null;
 
 function App() {
   const isIframe = window.location !== window.parent.location;
@@ -32,6 +35,7 @@ function App() {
   const [showTypingIndicator, setShowTypingIndicator] = useState(false);
   const [smsOptInSubmitting, setSmsOptInSubmitting] = useState(false);
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
+  const [typingIndicatorDisabled, setTypingIndicatorDisabled] = useState(false);
 
   // connect to pusher
   useEffect(() => {
@@ -71,9 +75,9 @@ function App() {
   }
 
   function onStartChatFormSubmit(values) {
+    handleInvalidToken();
     setIsSubmitting(true);
     const requestData = {client_id: 1210, name: values.name, email_address: values.email_address, body: values.message, clientIdentifier: clientIdentifier};
-
     fetch(apiURL + 'initializeConversation/', {
       method: "POST",
       withCredentials: true,
@@ -90,7 +94,7 @@ function App() {
           error.response = response;
           throw error;
         }
-
+        setMessages([]);
         setIsSubmitting(false);
         setLocalStorage('stu_jwt', json.data.token, 'set_stu_jwt');
         setLocalStorage('stu_conversation_id', json.data.conversationID, 'set_stu_jwt');
@@ -156,9 +160,7 @@ function App() {
           error.response = response;
           throw error;
         }
-
         setConversation(json.data.conversation);
-
       })
       .catch(function(ex) {
         alert('error');
@@ -227,7 +229,7 @@ function App() {
         setMessages(messages => [...messages, ...response.data.messages]);
         // set up pusher
         Pusher.logToConsole = true;
-        const pusher = new Pusher('66e7f1b4416d81db9385', {
+        pusher = new Pusher('66e7f1b4416d81db9385', {
           cluster: 'us3',
           authEndpoint: 'https://dev01.sotellus.com/API/chat/pusherAuthentication/',
           auth: {
@@ -244,12 +246,21 @@ function App() {
           }
           newMessageAlert();
           setChatClosed(false);
+          setShowTypingIndicator(false);
           setMessages(messages => [...messages, {id: Date.now(), sent_by_contact: data.sent_by_contact, body: data.body, sent: data.sent}]);
+        });
+
+        channel.bind('conversation-closed', function(data) {
+          console.log(data.conversation);
+          setConversation(data.conversation);
         });
 
         channel.bind('client-typing', function(data) {
           setChatClosed(false);
           setShowTypingIndicator(true);
+          setTimeout(() => {
+            setShowTypingIndicator(false);
+          }, 4000);
         });
       })
       .catch((err) => {
@@ -260,6 +271,16 @@ function App() {
 
   function handleComposeMessageChange(e) {
     setComposeMessageValue(e.target.value);
+
+    if (typingIndicatorDisabled === false) {
+      const channel = pusher.subscribe(conversation.channel_name);
+      channel.trigger('client-typing', { id: conversation.id });
+
+      setTypingIndicatorDisabled(true);
+      setTimeout(() => {
+        setTypingIndicatorDisabled(false);
+      }, 4000)
+    }
   }
 
   function handleNewMessage() {

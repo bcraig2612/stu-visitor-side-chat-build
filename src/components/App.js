@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import Pusher from 'pusher-js';
 import moment from "moment";
-
 import ChatWindow from './ChatWindow';
 import ChatToggle from './ChatToggle';
-import postData from "../utils/postData";
 import notificationMP3 from "../notification.mp3";
 
 // this will identify the client we are on
@@ -23,7 +21,7 @@ function newMessageAlert() {
 
 let pusher = null;
 
-function App() {
+function App(props) {
   const isIframe = window.location !== window.parent.location;
   const [chatClosed, setChatClosed] = useState(isIframe);
   const [composeMessageValue, setComposeMessageValue] = useState('');
@@ -229,7 +227,7 @@ function App() {
         setMessages(messages => [...messages, ...response.data.messages]);
         // set up pusher
         Pusher.logToConsole = true;
-        pusher = new Pusher('66e7f1b4416d81db9385', {
+        pusher = new Pusher('a3105b52df63262dc19e', {
           cluster: 'us3',
           authEndpoint: 'https://dev01.sotellus.com/API/chat/pusherAuthentication/',
           auth: {
@@ -322,6 +320,7 @@ function App() {
         setConversationToClosed={setConversationToClosed}
         handleInvalidToken={handleInvalidToken}
         showTypingIndicator={showTypingIndicator}
+        widgetConfig={props.widgetConfig}
       />
       {isIframe ? <ChatToggle handleChatWindowToggle={handleChatWindowToggle} chatClosed={chatClosed} /> : null }
     </div>

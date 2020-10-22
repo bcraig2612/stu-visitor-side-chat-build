@@ -1,27 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './components/App';
+import Widget from './components/Widget';
 import * as serviceWorker from './serviceWorker';
 import 'fontsource-roboto';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
-import { ThemeProvider } from '@material-ui/core/styles';
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: window.themeColor ? window.themeColor : "#3f51b5",
-    },
-  },
-});
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
+    <Router>
+        <Switch>
+          <Route path="/:uid" children={<Widget />} />
+        </Switch>
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );

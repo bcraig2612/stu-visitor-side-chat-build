@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ChatAgent() {
+export default function ChatAgent(props) {
   const classes = useStyles();
 
   return (
@@ -52,9 +52,9 @@ export default function ChatAgent() {
         }}
         variant="dot"
       >
-        <Avatar>C</Avatar>
+        <Avatar>{props.displayName.charAt(0)}</Avatar>
       </StyledBadge>
-      <div style={{marginLeft: "10px"}}>Customer Service</div>
+      <div style={{marginLeft: "10px"}}>{props.displayName}</div>
     </div>
   );
 }

@@ -75,17 +75,12 @@ function ChatWindow(props) {
         <div className={classes.chatWindow}>
           <div className={classes.header}>
             {props.accessToken.length > 0 && (props.conversation.active == 1) && (props.conversation.accepted == 1) && (
-              <div className={classes.title}><ChatAgent /></div>
+              <div className={classes.title}><ChatAgent displayName={props.widgetConfig.display_name}/></div>
             ) }
             {(!props.accessToken.length > 0 || (props.conversation.accepted == 0) || (props.conversation.active == 0)) && (
               <div className={classes.title}>Live Chat</div>
             ) }
-            {/*<CallMadeIcon*/}
-            {/*  className={classes.headerAction}*/}
-            {/*  onClick={() => {*/}
-            {/*    window.parent.postMessage(JSON.stringify({'action': 'new_window'}), "*")*/}
-            {/*  }}*/}
-            {/*  />*/}
+
             <CloseIcon className={classes.headerAction} onClick={() => props.handleChatWindowToggle(true)}  />
           </div>
           {props.accessToken.length > 0 && (props.conversation.active == 0) && (props.conversation.accepted == 1) && <ChatComplete handleInvalidToken={props.handleInvalidToken} />}

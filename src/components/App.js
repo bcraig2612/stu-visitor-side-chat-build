@@ -134,7 +134,6 @@ function App(props) {
       })
       .catch(function(ex) {
         setSmsOptInSubmitting(false);
-        alert('error');
       });
   }
 

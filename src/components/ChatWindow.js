@@ -1,7 +1,6 @@
 import React from 'react';
 import Slide from "@material-ui/core/Slide";
 import CloseIcon from '@material-ui/icons/Close';
-import CallMadeIcon from '@material-ui/icons/CallMade';
 import { makeStyles } from '@material-ui/core/styles';
 import Footer from './Footer';
 import StartChatForm from "./StartChatForm";

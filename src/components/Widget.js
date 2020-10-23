@@ -21,7 +21,7 @@ export default function Widget(props) {
 
   useEffect(() => {
     getWidgetConfig(uid);
-  }, []);
+  }, [uid]);
 
   function getWidgetConfig(uid) {
     fetch(apiURL + 'widget/?uid=' + uid, {

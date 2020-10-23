@@ -8,7 +8,7 @@ import notificationMP3 from "../notification.mp3";
 // this will identify the client we are on
 // so we don't show duplicate messages from pusher
 const clientIdentifier = Date.now();
-const apiURL = 'https://dev01.sotellus.com/API/chat/';
+const apiURL = process.env.REACT_APP_API_URL;
 
 // play alert sound
 function newMessageAlert() {
@@ -49,7 +49,7 @@ function App(props) {
       loadConversation(jwt);
     }
 
-  }, []);
+  }, [isIframe]);
 
   function reloadConversation() {
     const jwt = getLocalStorage('stu_jwt');

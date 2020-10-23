@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import Button from "@material-ui/core/Button";

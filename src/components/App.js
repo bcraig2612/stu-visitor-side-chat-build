@@ -75,7 +75,7 @@ function App(props) {
   function onStartChatFormSubmit(values) {
     handleInvalidToken();
     setIsSubmitting(true);
-    const requestData = {uid: window.__be.id, name: values.name, email_address: values.email_address, body: values.message, clientIdentifier: clientIdentifier};
+    const requestData = {uid: props.uid, name: values.name, email_address: values.email_address, body: values.message, clientIdentifier: clientIdentifier};
     fetch(apiURL + 'initializeConversation/', {
       method: "POST",
       withCredentials: true,

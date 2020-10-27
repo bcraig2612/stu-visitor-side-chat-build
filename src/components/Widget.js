@@ -45,7 +45,7 @@ export default function Widget(props) {
     <Router>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <App widgetConfig={widgetConfig} />
+        <App uid={uid} widgetConfig={widgetConfig} />
       </ThemeProvider>
     </Router>
   );

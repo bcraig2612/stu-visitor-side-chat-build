@@ -106,10 +106,14 @@ function App(props) {
       });
   }
 
-  function smsOptIn(phoneNumber)
+  function smsOptIn(contactMethod, phoneNumber)
   {
+    // contactMethod should be (sms, call, or email)
+    if (! phoneNumber) {
+      phoneNumber = '';
+    }
     setSmsOptInSubmitting(true);
-    const requestData = {conversationID: conversation.id, phone_number: phoneNumber};
+    const requestData = {conversationID: conversation.id, phone_number: phoneNumber, contactMethod: contactMethod};
     fetch(apiURL + 'smsOptIn/', {
       method: "POST",
       withCredentials: true,

@@ -30,6 +30,7 @@ function WaitingOnAgent(props) {
   const classes = useStyles();
   const { register, setError, handleSubmit, errors } = useForm();
   const [showSendTextForm, setShowSendTextForm] = useState(false);
+  const [showSendEmailForm, setShowSendEmailForm] = useState(false);
   const [phoneContactType, setPhoneContactType] = useState('sms');
   const [value, setValue] = useState('');
 
@@ -92,7 +93,7 @@ function WaitingOnAgent(props) {
             setPhoneContactType('call')
             setShowSendTextForm(true)
           }}>Call</Button>
-          <Button onClick={() => emailOptIn()}>Email</Button>
+          <Button onClick={() => setShowSendEmailForm(true)}>Email</Button>
           {/*<Button onClick={props.closeWindow}>No</Button>*/}
         </ButtonGroup>
       </React.Fragment>
@@ -136,6 +137,26 @@ function WaitingOnAgent(props) {
             color="primary">{props.smsOptInSubmitting ? 'Loading..' : 'Submit'}</Button>
           {props.formError && <Alert severity="error" style={{width: "100%", marginTop: "10px"}}>{props.formError}</Alert>}
         </form>
+        <Button style={{marginTop: "10px"}} color="primary" onClick={() => setShowSendTextForm(false)}>Go back</Button>
+
+      </React.Fragment>
+    );
+  }
+
+  if (props.conversation.active === 0 && showSendEmailForm) {
+    content = (
+      <React.Fragment>
+        <p className={classes.waitingText}>Want us to email you at {props.conversation.email_address}?</p>
+        <Button
+          onClick={emailOptIn}
+          style={{marginTop: "10px"}}
+          disabled={props.smsOptInSubmitting}
+          type="submit"
+          size="large"
+          fullWidth={true}
+          variant="contained"
+          color="primary">{props.smsOptInSubmitting ? 'Loading..' : 'Yes'}</Button>
+        <Button style={{marginTop: "10px"}} color="primary" onClick={() => setShowSendEmailForm(false)}>Go back</Button>
       </React.Fragment>
     );
   }
@@ -145,6 +166,7 @@ function WaitingOnAgent(props) {
       <React.Fragment>
         <ThumbUpIcon color="primary" />
         <p className={classes.waitingText}>We got your message! Customer service will be texting you shortly.</p>
+        <Button color="primary" onClick={props.handleInvalidToken}>Start new chat</Button>
       </React.Fragment>
     );
   }
@@ -154,6 +176,7 @@ function WaitingOnAgent(props) {
       <React.Fragment>
         <ThumbUpIcon color="primary" />
         <p className={classes.waitingText}>We got your message! Customer service will be calling you shortly.</p>
+        <Button color="primary" onClick={props.handleInvalidToken}>Start new chat</Button>
       </React.Fragment>
     );
   }
@@ -163,6 +186,7 @@ function WaitingOnAgent(props) {
       <React.Fragment>
         <ThumbUpIcon color="primary" />
         <p className={classes.waitingText}>We got your message! Customer service will send an email to {props.conversation.email_address} shortly.</p>
+        <Button color="primary" onClick={props.handleInvalidToken}>Start new chat</Button>
       </React.Fragment>
     );
   }

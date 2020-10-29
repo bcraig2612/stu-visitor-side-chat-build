@@ -55,7 +55,7 @@ function App(props) {
 
   useEffect(() => {
     setTimeout(function() {
-      setShowPrompt(true);
+      handleEnableChatPrompt();
     }, 1000);
   }, []);
 
@@ -212,7 +212,7 @@ function App(props) {
 
   // if token is invalid clear localStorage and refresh window
   function handleInvalidToken() {
-    localStorage.clear();
+    localStorage.removeItem('stu_jwt');
     setAccessToken('');
   }
 
@@ -240,7 +240,7 @@ function App(props) {
         Pusher.logToConsole = true;
         pusher = new Pusher('a3105b52df63262dc19e', {
           cluster: 'us3',
-          authEndpoint: 'https://dev01.sotellus.com/API/chat/pusherAuthentication/',
+          authEndpoint: apiURL + 'pusherAuthentication/',
           auth: {
             headers: {
               Authorization: 'Bearer ' + jwt,
@@ -284,6 +284,19 @@ function App(props) {
 
   function handleDisableChatPrompt() {
     setShowPrompt(false);
+    const msg = JSON.stringify({'action': "minimize"});
+    setLocalStorage('stu_chat_prompt_disabled', true);
+    window.parent.postMessage(msg, "*");
+  }
+
+  function handleEnableChatPrompt() {
+    const promptDisabled = getLocalStorage('stu_chat_prompt_disabled')
+    if (promptDisabled) {
+      return;
+    }
+    const msg = JSON.stringify({'action': "show_chat_prompt"});
+    window.parent.postMessage(msg, "*");
+    setShowPrompt(true);
   }
 
   function handleComposeMessageChange(e) {

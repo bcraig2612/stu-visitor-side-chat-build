@@ -4,6 +4,7 @@ import moment from "moment";
 import ChatWindow from './ChatWindow';
 import ChatToggle from './ChatToggle';
 import notificationMP3 from "../notification.mp3";
+import ChatPrompt from "./ChatPrompt";
 
 // this will identify the client we are on
 // so we don't show duplicate messages from pusher
@@ -24,6 +25,7 @@ let pusher = null;
 function App(props) {
   const isIframe = window.location !== window.parent.location;
   const [chatClosed, setChatClosed] = useState(isIframe);
+  const [showPrompt, setShowPrompt] = useState(false);
   const [composeMessageValue, setComposeMessageValue] = useState('');
   const [accessToken, setAccessToken] = useState('');
   const [formError, setFormError] = useState('');
@@ -50,6 +52,12 @@ function App(props) {
     }
 
   }, [isIframe]);
+
+  useEffect(() => {
+    setTimeout(function() {
+      setShowPrompt(true);
+    }, 1000);
+  }, []);
 
   function reloadConversation() {
     const jwt = getLocalStorage('stu_jwt');
@@ -270,6 +278,14 @@ function App(props) {
       });
   }
 
+  function closeChatPrompt() {
+    handleDisableChatPrompt();
+  }
+
+  function handleDisableChatPrompt() {
+    setShowPrompt(false);
+  }
+
   function handleComposeMessageChange(e) {
     setComposeMessageValue(e.target.value);
 
@@ -295,6 +311,7 @@ function App(props) {
 
   function handleChatWindowToggle(closeChat) {
     setChatClosed(closeChat);
+    handleDisableChatPrompt();
   }
 
   if (!isIframe) {
@@ -303,6 +320,7 @@ function App(props) {
 
   return (
     <div>
+      {showPrompt && <ChatPrompt closeChatPrompt={closeChatPrompt} handleChatWindowToggle={handleChatWindowToggle} />}
       <ChatWindow
         handleNewMessage={handleNewMessage}
         messages={messages}

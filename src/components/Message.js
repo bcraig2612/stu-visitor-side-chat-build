@@ -50,7 +50,16 @@ function Message(props) {
 
   return (
     <div className={classes.conversationItem}>
-      <div className={classes.bubble}>{props.message.body}</div>
+      <div className={classes.bubble}>
+        {props.message.body.split('\n').map(function(item, key) {
+          return (
+            <span key={key}>
+                {item}
+              <br/>
+            </span>
+          )
+        })}
+      </div>
       <div className={classes.timeStamp}>{props.message.error ? 'Error sending message' : sent}</div>
     </div>
   );

@@ -34,11 +34,11 @@ function StartChatForm(props) {
       <p>Fill out the form to start chatting!</p>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
-          inputProps={{ 'name': 'name', maxLength: 300 }}
+          inputProps={{ 'name': 'name', maxLength: 70 }}
           inputRef={register({
             required: "Required",
             minLength: 1,
-            maxLength: 300
+            maxLength: 70
           })}
           fullWidth={true}
           className={classes.chatFormInput}

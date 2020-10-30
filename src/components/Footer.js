@@ -21,12 +21,18 @@ function Footer(props) {
   const [sendDisabled, setSendDisabled] = useState(false);
 
   function handleSubmit() {
-    if (props.composeMessageValue.length < 1) {
+    if (props.composeMessageValue.length < 1 || sendDisabled) {
       return false;
     }
     setSendDisabled(true);
     setTimeout(() => setSendDisabled(false), 1000);
     props.handleNewMessage();
+  }
+
+  function keyPress(e) {
+    if(e.keyCode == 13){
+      handleSubmit();
+    }
   }
 
   return (
@@ -35,13 +41,12 @@ function Footer(props) {
         inputProps={{ maxLength: 300 }}
         id="filled-multiline-flexible"
         label="Message"
-        multiline
-        rowsMax={4}
         value={props.composeMessageValue}
         variant="filled"
         size="small"
         onChange={props.handleComposeMessageChange}
         className={classes.composeMessage}
+        onKeyDown={keyPress}
       />
       <Fab disabled={sendDisabled} onClick={handleSubmit} style={{marginLeft: "10px"}} size="small" color="primary" aria-label="send">
         <SendIcon />

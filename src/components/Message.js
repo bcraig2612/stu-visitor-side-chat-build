@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: props.message.sent_by_contact ? "26px 26px 3px 26px" : "26px 26px 26px 3px",
     padding: "12px 20px",
     display: "inline-block",
-    maxWidth: "54%",
+    maxWidth: "80%",
     overflowWrap: "break-word",
     lineHeight: "1.4",
     fontSize: "14px",

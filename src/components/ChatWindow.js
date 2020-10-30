@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Slide from "@material-ui/core/Slide";
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,6 +8,7 @@ import Messages from "./Messages";
 import WaitingOnAgent from "./WaitingOnAgent";
 import ChatComplete from "./ChatComplete";
 import ChatAgent from "./ChatAgent";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({
   header: props => ({
@@ -44,11 +45,29 @@ const useStyles = makeStyles((theme) => ({
   title: {
     marginRight: "auto",
     ...theme.typography.button,
+    display: "flex",
+    alignItems: "center"
   }
 }));
 
 function ChatWindow(props) {
   const classes = useStyles(props);
+
+  useEffect(() => {
+    console.log(props.conversation)
+
+    if (props.conversation.active && props.conversation.accepted == 0) {
+      const timer = setInterval(() => {
+        console.log('test');
+        props.setConversationToClosed();
+      }, 10000);
+
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [props.conversation]);
+
   let content = (
       <div className={classes.chatWindow}>
         <div className={classes.header}>
@@ -76,17 +95,21 @@ function ChatWindow(props) {
             {props.accessToken.length > 0 && (props.conversation.active == 1) && (props.conversation.accepted == 1) && (
               <div className={classes.title}><ChatAgent displayName={props.widgetConfig.display_name}/></div>
             ) }
-            {(!props.accessToken.length > 0 || (props.conversation.accepted == 0) || (props.conversation.active == 0)) && (
+            {(!props.accessToken.length > 0 || (props.conversation.active == 0)) && (
               <div className={classes.title}>Live Chat</div>
+            ) }
+
+            {(props.accessToken.length > 0 && (props.conversation.active == 1) && (props.conversation.accepted == 0)) && (
+              <div className={classes.title}><CircularProgress size={20} color="inherit" /> <span style={{marginLeft: "10px"}}>Live Chat</span></div>
             ) }
 
             <CloseIcon className={classes.headerAction} onClick={() => props.handleChatWindowToggle(true)}  />
           </div>
           {props.accessToken.length > 0 && (props.conversation.active == 0) && (props.conversation.accepted == 1) && <ChatComplete handleInvalidToken={props.handleInvalidToken} />}
-          {props.accessToken.length > 0 && (props.conversation.accepted == 0) && <WaitingOnAgent handleInvalidToken={props.handleInvalidToken} setConversationToClosed={props.setConversationToClosed} smsOptInSubmitting={props.smsOptInSubmitting} smsOptIn={props.smsOptIn} reloadConversation={props.reloadConversation} conversation={props.conversation} closeWindow={() => props.handleChatWindowToggle(true)} />}
+          {/*{props.accessToken.length > 0 && (props.conversation.accepted == 0) && <WaitingOnAgent handleInvalidToken={props.handleInvalidToken} setConversationToClosed={props.setConversationToClosed} smsOptInSubmitting={props.smsOptInSubmitting} smsOptIn={props.smsOptIn} reloadConversation={props.reloadConversation} conversation={props.conversation} closeWindow={() => props.handleChatWindowToggle(true)} />}*/}
           {!props.accessToken.length > 0 && <StartChatForm formError={props.formError} isSubmitting={props.isSubmitting} onStartChatFormSubmit={props.onStartChatFormSubmit} />}
-          {props.accessToken.length > 0 && (props.conversation.active == 1) && (props.conversation.accepted == 1) && <Messages showTypingIndicator={props.showTypingIndicator} isLoadingConversation={props.isLoadingConversation} messages={props.messages} />}
-          {props.accessToken.length > 0 && (props.conversation.active == 1) && (props.conversation.accepted == 1) && <Footer handleNewMessage={props.handleNewMessage} composeMessageValue={props.composeMessageValue} handleComposeMessageChange={props.handleComposeMessageChange} />}
+          {props.accessToken.length > 0 && (props.conversation.active == 1 || (props.conversation.active == 0 && props.conversation.accepted == 0)) && <Messages handleInvalidToken={props.handleInvalidToken} conversation={props.conversation} showTypingIndicator={props.showTypingIndicator} isLoadingConversation={props.isLoadingConversation} messages={props.messages} smsOptInSubmitting={props.smsOptInSubmitting} smsOptIn={props.smsOptIn} />}
+          {props.accessToken.length > 0 && (props.conversation.active == 1) && <Footer handleNewMessage={props.handleNewMessage} composeMessageValue={props.composeMessageValue} handleComposeMessageChange={props.handleComposeMessageChange} />}
         </div>
       </Slide>
     );

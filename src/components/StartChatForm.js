@@ -49,38 +49,7 @@ function StartChatForm(props) {
           aria-invalid={errors.name ? "true" : "false"}
           helperText={errors.name ? 'Please enter your name.' : ''}
         />
-        <TextField
-          inputProps={{ 'name': 'email_address', maxLength: 320 }}
-          inputRef={register({
-            required: "Required",
-            minLength: 3,
-            maxLength: 320
-          })}
-          fullWidth={true}
-          className={classes.chatFormInput}
-          label="Email address"
-          variant="outlined"
-          error={!!errors.email_address}
-          aria-invalid={errors.email_address ? "true" : "false"}
-          helperText={errors.email_address ? 'Invalid email address.' : ''}
-        />
 
-        <TextField
-          inputProps={{ 'name': 'message', maxLength: 300 }}
-          inputRef={register({
-            required: "Required",
-            minLength: 1,
-            maxLength: 300
-          })}
-          multiline
-          rowsMax={4}
-          fullWidth={true}
-          className={classes.chatFormInput}
-          label="Message"
-          variant="outlined"
-          error={!!errors.message}
-          helperText={errors.message && errors.message.message ? errors.message.message : ''}
-        />
         <Button
           disabled={props.isSubmitting}
           type="submit"

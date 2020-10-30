@@ -1,13 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from "react";
+import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import { useForm } from "react-hook-form";
 import Alert from "@material-ui/lab/Alert";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
-import { parsePhoneNumberFromString, AsYouType } from 'libphonenumber-js';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp';
+import {AsYouType, parsePhoneNumberFromString} from "libphonenumber-js";
+import {useForm} from "react-hook-form";
+import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 
 const useStyles = makeStyles((theme) => ({
   startChatForm: {
@@ -26,25 +24,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function WaitingOnAgent(props) {
+function ContactRequestForm(props) {
   const classes = useStyles();
   const { register, setError, handleSubmit, errors } = useForm();
-  const [showSendTextForm, setShowSendTextForm] = useState(false);
-  const [showSendEmailForm, setShowSendEmailForm] = useState(false);
-  const [phoneContactType, setPhoneContactType] = useState('sms');
   const [value, setValue] = useState('');
-
-  useEffect(() => {
-    if (props.conversation.active) {
-      const timer = setInterval(() => {
-        props.setConversationToClosed();
-      }, 10000);
-
-      return () => {
-        clearInterval(timer);
-      };
-    }
-  }, [props.conversation]);
 
   const onSubmit = values => {
     const phoneNumber = parsePhoneNumberFromString(values.name, 'US');
@@ -63,8 +46,8 @@ function WaitingOnAgent(props) {
     });
   }
 
-  const emailOptIn = () => {
-    props.smsOptIn('email');
+  const emailOptIn = values => {
+    props.smsOptIn('email', values.name);
   }
 
   const onType = event => {
@@ -73,40 +56,16 @@ function WaitingOnAgent(props) {
     setValue(newValue);
   }
 
-  let content = (
-    <React.Fragment>
-      <p className={classes.waitingText}>Please wait while we connect you with customer service..</p>
-      <CircularProgress />
-    </React.Fragment>
-  );
+  let content;
 
-  if (props.conversation.active === 0 && !showSendTextForm) {
-    content = (
-      <React.Fragment>
-        <p className={classes.waitingText}>Our customer service team is busy helping other customers, how would you like us to contact you?</p>
-        <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group" disabled={props.smsOptInSubmitting}>
-          <Button onClick={() => {
-            setPhoneContactType('sms')
-            setShowSendTextForm(true)
-          }}>Text</Button>
-          <Button onClick={() => {
-            setPhoneContactType('call')
-            setShowSendTextForm(true)
-          }}>Call</Button>
-          <Button onClick={() => setShowSendEmailForm(true)}>Email</Button>
-        </ButtonGroup>
-      </React.Fragment>
-    );
-  }
-
-  if (props.conversation.active === 0 && showSendTextForm && (phoneContactType === 'sms' || phoneContactType === 'call')) {
+  if (props.conversation.active === 0 && props.showSendTextForm && (props.phoneContactType === 'sms' || props.phoneContactType === 'call')) {
     content = (
       <React.Fragment>
 
-        {phoneContactType === "sms" && <p className={classes.waitingText}>Enter your phone number and we will get back to you via text!</p>}
-        {phoneContactType === "call" && <p className={classes.waitingText}>Enter your phone number and we will give you a call!</p>}
+        {props.phoneContactType === "sms" && <p className={classes.waitingText}>Enter your phone number and we will get back to you via text!</p>}
+        {props.phoneContactType === "call" && <p className={classes.waitingText}>Enter your phone number and we will give you a call!</p>}
         <form onSubmit={handleSubmit(onSubmit)}>
-          <input type="hidden" ref={register} name="contactMethod" value={phoneContactType} />
+          <input type="hidden" ref={register} name="contactMethod" value={props.phoneContactType} />
           <TextField
             inputProps={{ 'name': 'name', maxLength: 300 }}
             inputRef={register({
@@ -136,16 +95,34 @@ function WaitingOnAgent(props) {
             color="primary">{props.smsOptInSubmitting ? 'Loading..' : 'Submit'}</Button>
           {props.formError && <Alert severity="error" style={{width: "100%", marginTop: "10px"}}>{props.formError}</Alert>}
         </form>
-        <Button style={{marginTop: "10px"}} color="primary" onClick={() => setShowSendTextForm(false)}>Go back</Button>
+        <Button style={{marginTop: "10px"}} color="primary" onClick={() => props.setShowSendTextForm(false)}>Go back</Button>
 
       </React.Fragment>
     );
   }
 
-  if (props.conversation.active === 0 && showSendEmailForm) {
+  if (props.conversation.active === 0 && props.showSendEmailForm) {
     content = (
       <React.Fragment>
-        <p className={classes.waitingText}>Want us to email you at {props.conversation.email_address}?</p>
+        <p className={classes.waitingText}>What email address should we contact you at?</p>
+        <TextField
+          inputProps={{ 'name': 'name', maxLength: 300 }}
+          inputRef={register({
+            required: "Required",
+            minLength: 1,
+            maxLength: 300
+          })}
+          fullWidth={true}
+          className={classes.chatFormInput}
+          id="outlined-basic"
+          label="Email address"
+          variant="outlined"
+          error={!!errors.name}
+          aria-invalid={errors.name ? "true" : "false"}
+          helperText={errors.name ? errors.name.message : ''}
+          value={value}
+          onChange={onType}
+        />
         <Button
           onClick={emailOptIn}
           style={{marginTop: "10px"}}
@@ -155,7 +132,7 @@ function WaitingOnAgent(props) {
           fullWidth={true}
           variant="contained"
           color="primary">{props.smsOptInSubmitting ? 'Loading..' : 'Yes'}</Button>
-        <Button style={{marginTop: "10px"}} color="primary" onClick={() => setShowSendEmailForm(false)}>Go back</Button>
+        <Button style={{marginTop: "10px"}} color="primary" onClick={() => props.setShowSendEmailForm(false)}>Go back</Button>
       </React.Fragment>
     );
   }
@@ -197,4 +174,4 @@ function WaitingOnAgent(props) {
   );
 }
 
-export default WaitingOnAgent;
+export default ContactRequestForm;

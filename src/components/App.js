@@ -83,7 +83,7 @@ function App(props) {
   function onStartChatFormSubmit(values) {
     handleInvalidToken();
     setIsSubmitting(true);
-    const requestData = {uid: props.uid, name: values.name, email_address: values.email_address, body: values.message, clientIdentifier: clientIdentifier};
+    const requestData = {uid: props.uid, name: values.name, clientIdentifier: clientIdentifier};
     fetch(apiURL + 'initializeConversation/', {
       method: "POST",
       withCredentials: true,
@@ -114,14 +114,14 @@ function App(props) {
       });
   }
 
-  function smsOptIn(contactMethod, phoneNumber)
+  function smsOptIn(contactMethod, value)
   {
     // contactMethod should be (sms, call, or email)
-    if (! phoneNumber) {
-      phoneNumber = '';
+    if (! value) {
+      value = '';
     }
     setSmsOptInSubmitting(true);
-    const requestData = {conversationID: conversation.id, phone_number: phoneNumber, contactMethod: contactMethod};
+    const requestData = {conversationID: conversation.id, value: value, contactMethod: contactMethod};
     fetch(apiURL + 'smsOptIn/', {
       method: "POST",
       withCredentials: true,
@@ -151,6 +151,9 @@ function App(props) {
 
   function setConversationToClosed()
   {
+    if (!conversation.id) {
+      return;
+    }
     const requestData = {conversationID: conversation.id};
     fetch(apiURL + 'setConversationToClosed/', {
       method: "POST",
@@ -172,7 +175,7 @@ function App(props) {
         setConversation(json.data.conversation);
       })
       .catch(function(ex) {
-        alert('error');
+
       });
   }
 
@@ -259,8 +262,12 @@ function App(props) {
           setMessages(messages => [...messages, {id: Date.now(), sent_by_contact: data.sent_by_contact, body: data.body, sent: data.sent}]);
         });
 
+        channel.bind('conversation-accepted', function(data) {
+          setConversation(data);
+          setChatClosed(false);
+        });
+
         channel.bind('conversation-closed', function(data) {
-          console.log(data.conversation);
           setConversation(data.conversation);
         });
 
@@ -355,6 +362,7 @@ function App(props) {
         handleInvalidToken={handleInvalidToken}
         showTypingIndicator={showTypingIndicator}
         widgetConfig={props.widgetConfig}
+
       />
       {isIframe ? <ChatToggle handleChatWindowToggle={handleChatWindowToggle} chatClosed={chatClosed} /> : null }
     </div>

@@ -83,7 +83,7 @@ function App(props) {
   function onStartChatFormSubmit(values) {
     handleInvalidToken();
     setIsSubmitting(true);
-    const requestData = {uid: props.uid, name: values.name, clientIdentifier: clientIdentifier};
+    const requestData = {uid: props.uid, name: values.name, captchaToken: values.captchaToken, clientIdentifier: clientIdentifier};
     fetch(apiURL + 'initializeConversation/', {
       method: "POST",
       withCredentials: true,

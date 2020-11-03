@@ -1,9 +1,14 @@
-import React from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { useForm } from "react-hook-form";
 import Alert from "@material-ui/lab/Alert";
+import {
+  useGoogleReCaptcha,
+  GoogleReCaptcha
+} from 'react-google-recaptcha-v3';
+import {ReCaptcha} from "./Recaptcha";
 
 const useStyles = makeStyles((theme) => ({
   startChatForm: {
@@ -23,11 +28,22 @@ const useStyles = makeStyles((theme) => ({
 
 function StartChatForm(props) {
   const classes = useStyles();
-  const { register, handleSubmit, errors } = useForm();
+  const [token, setToken] = useState('');
+  const { handleSubmit, errors, register, setValue, getValues } = useForm({
+    mode: 'onChange'
+  });
 
   const onSubmit = values => {
     props.onStartChatFormSubmit(values);
   }
+
+  const onVerifyCaptcha = (token) => {
+    setValue('captchaToken', token);
+  };
+
+  useEffect(() => {
+    register({ name: 'captchaToken' }, { required: true });
+  });
 
   return (
     <div className={classes.startChatForm}>
@@ -49,9 +65,10 @@ function StartChatForm(props) {
           aria-invalid={errors.name ? "true" : "false"}
           helperText={errors.name ? 'Please enter your name.' : ''}
         />
+        <ReCaptcha token={token} setToken={setToken} onVerifyCaptcha={onVerifyCaptcha} />
 
         <Button
-          disabled={props.isSubmitting}
+          disabled={props.isSubmitting || token === ""}
           type="submit"
           size="large"
           fullWidth={true}

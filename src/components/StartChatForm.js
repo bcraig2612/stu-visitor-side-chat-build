@@ -9,6 +9,7 @@ import {
   GoogleReCaptcha
 } from 'react-google-recaptcha-v3';
 import {ReCaptcha} from "./Recaptcha";
+import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
   startChatForm: {
@@ -23,6 +24,10 @@ const useStyles = makeStyles((theme) => ({
   },
   chatFormInput: {
     marginBottom: "10px",
+  },
+  recaptchaText: {
+    fontSize: ".9em",
+    color: "#585858"
   }
 }));
 
@@ -75,6 +80,11 @@ function StartChatForm(props) {
           variant="contained"
           color="primary">{props.isSubmitting ? 'Loading..' : 'Start Chat'}</Button>
         {props.formError && <Alert severity="error" style={{width: "100%", marginTop: "10px"}}>{props.formError}</Alert>}
+        <p className={classes.recaptchaText}>
+          This site is protected by reCAPTCHA and the Google
+          <Link href="https://policies.google.com/privacy" target="_blank"> Privacy Policy</Link> and
+          <Link href="https://policies.google.com/terms" target="_blank"> Terms of Service</Link> apply.
+        </p>
       </form>
     </div>
   );

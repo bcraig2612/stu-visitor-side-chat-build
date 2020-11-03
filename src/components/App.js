@@ -143,6 +143,7 @@ function App(props) {
 
       })
       .catch(function(ex) {
+        console.log(ex);
         setSmsOptInSubmitting(false);
       });
   }

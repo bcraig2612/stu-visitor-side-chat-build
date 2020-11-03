@@ -30,20 +30,25 @@ function ContactRequestForm(props) {
   const [value, setValue] = useState('');
 
   const onSubmit = values => {
-    const phoneNumber = parsePhoneNumberFromString(values.name, 'US');
+    if (values.contactMethod === "email") {
+      props.smsOptIn('email', values.name);
+      return;
+    } else {
+      const phoneNumber = parsePhoneNumberFromString(values.name, 'US');
 
-    if (phoneNumber) {
-      if (phoneNumber.isValid()) {
-        // submit form
-        props.smsOptIn(values.contactMethod, phoneNumber.number);
-        return;
+      if (phoneNumber) {
+        if (phoneNumber.isValid()) {
+          // submit form
+          props.smsOptIn(values.contactMethod, phoneNumber.number);
+          return;
+        }
       }
+      setError("name", {
+        type: "manual",
+        message: "Enter a valid phone number."
+      });
     }
 
-    setError("name", {
-      type: "manual",
-      message: "Enter a valid phone number."
-    });
   }
 
   const emailOptIn = values => {
@@ -52,8 +57,12 @@ function ContactRequestForm(props) {
 
   const onType = event => {
     const { value } = event.target;
-    const newValue = new AsYouType('US').input(value);
-    setValue(newValue);
+    if (! props.showSendEmailForm) {
+      const newValue = new AsYouType('US').input(value);
+      setValue(newValue);
+      return;
+    }
+    setValue(value);
   }
 
   let content;
@@ -105,33 +114,36 @@ function ContactRequestForm(props) {
     content = (
       <React.Fragment>
         <p className={classes.waitingText}>What email address should we contact you at?</p>
-        <TextField
-          inputProps={{ 'name': 'name', maxLength: 300 }}
-          inputRef={register({
-            required: "Required",
-            minLength: 1,
-            maxLength: 300
-          })}
-          fullWidth={true}
-          className={classes.chatFormInput}
-          id="outlined-basic"
-          label="Email address"
-          variant="outlined"
-          error={!!errors.name}
-          aria-invalid={errors.name ? "true" : "false"}
-          helperText={errors.name ? errors.name.message : ''}
-          value={value}
-          onChange={onType}
-        />
-        <Button
-          onClick={emailOptIn}
-          style={{marginTop: "10px"}}
-          disabled={props.smsOptInSubmitting}
-          type="submit"
-          size="large"
-          fullWidth={true}
-          variant="contained"
-          color="primary">{props.smsOptInSubmitting ? 'Loading..' : 'Yes'}</Button>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input type="hidden" ref={register} name="contactMethod" value="email" />
+          <TextField
+            inputProps={{ 'name': 'name', maxLength: 320 }}
+            inputRef={register({
+              required: "Required",
+              minLength: 1,
+              maxLength: 320
+            })}
+            fullWidth={true}
+            className={classes.chatFormInput}
+            id="outlined-basic"
+            label="Email address"
+            variant="outlined"
+            error={!!errors.name}
+            aria-invalid={errors.name ? "true" : "false"}
+            helperText={errors.name ? errors.name.message : ''}
+            value={value}
+            onChange={onType}
+          />
+          <Button
+            style={{marginTop: "10px"}}
+            disabled={props.smsOptInSubmitting}
+            type="submit"
+            size="large"
+            fullWidth={true}
+            variant="contained"
+            color="primary">{props.smsOptInSubmitting ? 'Loading..' : 'Submit'}</Button>
+        </form>
+
         <Button style={{marginTop: "10px"}} color="primary" onClick={() => props.setShowSendEmailForm(false)}>Go back</Button>
       </React.Fragment>
     );

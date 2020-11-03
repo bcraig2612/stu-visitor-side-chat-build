@@ -46,7 +46,6 @@ function App(props) {
     // check to see if token is in storage
     const jwt = getLocalStorage('stu_jwt');
     if (jwt) {
-      console.log('Token was in storage: ' + jwt);
       setAccessToken(jwt);
       loadConversation(jwt);
     }
@@ -133,7 +132,6 @@ function App(props) {
     })
       .then(response => Promise.all([response, response.json()]))
       .then(([response, json]) => {
-        console.log(json);
         if (response.status < 200 || response.status >= 300) {
           let error = new Error(json.message);
           error.response = response;
@@ -166,7 +164,6 @@ function App(props) {
     })
       .then(response => Promise.all([response, response.json()]))
       .then(([response, json]) => {
-        console.log(json);
         if (response.status < 200 || response.status >= 300) {
           let error = new Error(json.message);
           error.response = response;
@@ -206,7 +203,6 @@ function App(props) {
           return state;
         });
         const foundIndex = updatedMessages.findIndex(x => x.id === tempID);
-        console.log(tempID, updatedMessages)
         updatedMessages[foundIndex].error = true;
         setMessages(updatedMessages);
       });
@@ -235,12 +231,11 @@ function App(props) {
       }
     }).then(response => response.json())
       .then(response => {
-        console.log(response);
         setIsLoadingConversation(false);
         setConversation(response.data.conversation);
         setMessages(messages => [...messages, ...response.data.messages]);
         // set up pusher
-        Pusher.logToConsole = true;
+        Pusher.logToConsole = false;
         pusher = new Pusher('a3105b52df63262dc19e', {
           cluster: 'us3',
           authEndpoint: apiURL + 'pusherAuthentication/',
@@ -280,7 +275,6 @@ function App(props) {
         });
       })
       .catch((err) => {
-        console.log(err);
         handleInvalidToken();
       });
   }

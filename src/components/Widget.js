@@ -28,7 +28,6 @@ export default function Widget(props) {
       method: "GET"
     }).then(response => response.json())
       .then(response => {
-        console.log(response);
         setWidgetConfig(response.data);
 
       })

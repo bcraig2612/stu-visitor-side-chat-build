@@ -40,6 +40,7 @@ function StartChatForm(props) {
 
   const onSubmit = values => {
     props.onStartChatFormSubmit(values);
+    setToken('');
   }
 
   const onVerifyCaptcha = (token) => {

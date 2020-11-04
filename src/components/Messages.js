@@ -57,17 +57,19 @@ function Messages(props) {
             "How would you like them to contact you back?",
           sent_by_contact: 0
         }} />
-        <ButtonGroup style={{minHeight: "36px"}} fullWidth variant="contained" color="primary" aria-label="contained primary button group" disabled={props.smsOptInSubmitting}>
-          <Button onClick={() => {
-            setPhoneContactType('sms')
-            setShowSendTextForm(true)
-          }}>Text</Button>
-          <Button onClick={() => {
-            setPhoneContactType('call')
-            setShowSendTextForm(true)
-          }}>Call</Button>
-          <Button onClick={() => setShowSendEmailForm(true)}>Email</Button>
-        </ButtonGroup>
+        <div style={{paddingBottom: "10px"}}>
+          <ButtonGroup style={{minHeight: "36px"}} fullWidth variant="contained" color="primary" aria-label="contained primary button group" disabled={props.smsOptInSubmitting}>
+            <Button onClick={() => {
+              setPhoneContactType('sms')
+              setShowSendTextForm(true)
+            }}>Text</Button>
+            <Button onClick={() => {
+              setPhoneContactType('call')
+              setShowSendTextForm(true)
+            }}>Call</Button>
+            <Button onClick={() => setShowSendEmailForm(true)}>Email</Button>
+          </ButtonGroup>
+        </div>
       </React.Fragment>
     );
   }

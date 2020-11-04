@@ -121,7 +121,11 @@ function ContactRequestForm(props) {
             inputRef={register({
               required: "Required",
               minLength: 1,
-              maxLength: 320
+              maxLength: 320,
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Invalid email address"
+              }
             })}
             fullWidth={true}
             className={classes.chatFormInput}

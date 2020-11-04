@@ -5,7 +5,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import App from "./App";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 
-const apiURL = 'https://dev01.sotellus.com/API/chat/';
+const apiURL = process.env.REACT_APP_API_URL;
 
 export default function Widget(props) {
   const { uid } = useParams();

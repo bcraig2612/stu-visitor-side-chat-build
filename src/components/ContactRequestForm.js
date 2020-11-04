@@ -48,8 +48,16 @@ function ContactRequestForm(props) {
         message: "Enter a valid phone number."
       });
     }
-
   }
+
+  const formatPhoneNumber = (value) => {
+    if (!value) return '';
+    value = value.toString();
+    if (value.includes('(') && !value.includes(')')) {
+      return value.replace('(', '');
+    }
+    return new AsYouType('US').input(value);
+  };
 
   const emailOptIn = values => {
     props.smsOptIn('email', values.name);
@@ -57,8 +65,9 @@ function ContactRequestForm(props) {
 
   const onType = event => {
     const { value } = event.target;
+
     if (! props.showSendEmailForm) {
-      const newValue = new AsYouType('US').input(value);
+      const newValue = formatPhoneNumber(value);
       setValue(newValue);
       return;
     }

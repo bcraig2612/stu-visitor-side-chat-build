@@ -30,6 +30,7 @@ function App(props) {
   const [accessToken, setAccessToken] = useState('');
   const [formError, setFormError] = useState('');
   const [conversation, setConversation] = useState({});
+  const [storedConversationID, setStoredConversationID] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTypingIndicator, setShowTypingIndicator] = useState(false);
@@ -37,29 +38,36 @@ function App(props) {
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [typingIndicatorDisabled, setTypingIndicatorDisabled] = useState(false);
 
-  // connect to pusher
   useEffect(() => {
-    if (!isIframe) {
-      return;
-    }
-
     // check to see if token is in storage
-    const jwt = getLocalStorage('stu_jwt');
-    if (jwt) {
+    const jwt = accessToken;
+    if (jwt && storedConversationID) {
       setAccessToken(jwt);
       loadConversation(jwt);
     }
 
-  }, [isIframe]);
+  }, [accessToken, storedConversationID]);
 
   useEffect(() => {
+    if (window.addEventListener) {
+      // For standards-compliant web browsers
+      window.addEventListener("message", displayMessage, false);
+    }
+    else {
+      window.attachEvent("onmessage", displayMessage);
+    }
+
+    // send message to parent to store jwt in local storage
+    const msg = JSON.stringify({'action': "get_stu_jwt"});
+    window.parent.postMessage(msg, "*");
+
     setTimeout(function() {
       handleEnableChatPrompt();
     }, 1000);
   }, []);
 
   function reloadConversation() {
-    const jwt = getLocalStorage('stu_jwt');
+    const jwt = accessToken;
     if (jwt) {
       setAccessToken(jwt);
       loadConversation(jwt);
@@ -70,13 +78,32 @@ function App(props) {
     return localStorage.getItem(key);
   }
 
+  function displayMessage(e) {
+    let key = e.message ? "message" : "data";
+    let data = e[key];
+
+    try {
+      data = JSON.parse(data);
+    } catch(e) {
+      return;
+    }
+
+    if (data.action === "stu_jwt") {
+      let messageData = {};
+      if (data.data && data.data.conversationID) {
+        messageData = data.data;
+      } else {
+        messageData = JSON.parse(data.data);
+      }
+      console.log(messageData)
+      setStoredConversationID(messageData.conversationID);
+      setAccessToken(messageData.token);
+    }
+  }
+
   function setLocalStorage(key, value, action) {
-    // if (isIframe) {
-    //   const msg = JSON.stringify({'action': action, 'key': key, 'value': value});
-    //   window.parent.postMessage(msg, "*")
-    //   return;
-    // }
-    localStorage.setItem(key, value);
+    const msg = JSON.stringify({'action': action, 'key': key, 'value': value});
+    window.parent.postMessage(msg, "*")
   }
 
   function onStartChatFormSubmit(values) {
@@ -101,11 +128,14 @@ function App(props) {
         }
         setMessages([]);
         setIsSubmitting(false);
-        setLocalStorage('stu_jwt', json.data.token, 'set_stu_jwt');
-        setLocalStorage('stu_conversation_id', json.data.conversationID, 'set_stu_jwt');
+        setConversation(json.data.conversation);
         setAccessToken(json.data.token);
-        setConversation({id: json.data.conversationID, channel_name: json.data.channel_name, active: 1});
-        loadConversation(json.data.token, json.data.conversationID)
+
+        // send message to parent to store jwt in local storage
+        const msg = JSON.stringify({'action': "set_stu_jwt", 'data': {token: json.data.token, conversationID: json.data.conversation.id}});
+        window.parent.postMessage(msg, "*");
+
+        //loadConversation(json.data.token, json.data.conversationID)
       })
       .catch(function(ex) {
         setIsSubmitting(false);
@@ -213,13 +243,18 @@ function App(props) {
   // if token is invalid clear localStorage and refresh window
   function handleInvalidToken() {
     localStorage.removeItem('stu_jwt');
+    setStoredConversationID(null);
     setAccessToken('');
   }
 
   function loadConversation(jwt, conversationID) {
-    const storedConversationID = getLocalStorage('stu_conversation_id');
-    if (storedConversationID) {
-      conversationID = storedConversationID;
+    conversationID = storedConversationID;
+    if (conversationID) {
+      conversationID = conversationID;
+    }
+
+    if (!conversationID) {
+      return false;
     }
 
     setIsLoadingConversation(true);
@@ -233,6 +268,7 @@ function App(props) {
     }).then(response => response.json())
       .then(response => {
         setIsLoadingConversation(false);
+        console.log(response.data.conversation);
         setConversation(response.data.conversation);
         setMessages(messages => [...messages, ...response.data.messages]);
         // set up pusher
@@ -287,13 +323,24 @@ function App(props) {
   function handleDisableChatPrompt() {
     setShowPrompt(false);
     const msg = JSON.stringify({'action': "minimize"});
-    setLocalStorage('stu_chat_prompt_disabled', true);
+    localStorage.setItem('stu_chat_prompt_disabled', '1');
+
     window.parent.postMessage(msg, "*");
   }
 
   function handleEnableChatPrompt() {
-    const promptDisabled = getLocalStorage('stu_chat_prompt_disabled')
+    const promptDisabled = localStorage.getItem('stu_chat_prompt_disabled')
     if (promptDisabled) {
+      return;
+    }
+
+    // ignore if chat window is open
+    let updatedState
+    setChatClosed(currentState=>{    // Do not change the state by get the updated state
+      updatedState = currentState;
+      return currentState
+    })
+    if (updatedState === false) {
       return;
     }
     const msg = JSON.stringify({'action': "show_chat_prompt"});

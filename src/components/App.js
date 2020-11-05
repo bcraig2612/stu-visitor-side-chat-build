@@ -241,7 +241,7 @@ function App(props) {
 
   // if token is invalid clear localStorage and refresh window
   function handleInvalidToken() {
-    localStorage.removeItem('stu_jwt');
+    localStorage.clear();
     setStoredConversationID(null);
     setAccessToken('');
   }

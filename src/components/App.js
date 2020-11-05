@@ -95,7 +95,6 @@ function App(props) {
       } else {
         messageData = JSON.parse(data.data);
       }
-      console.log(messageData)
       setStoredConversationID(messageData.conversationID);
       setAccessToken(messageData.token);
     }
@@ -268,7 +267,6 @@ function App(props) {
     }).then(response => response.json())
       .then(response => {
         setIsLoadingConversation(false);
-        console.log(response.data.conversation);
         setConversation(response.data.conversation);
         setMessages(messages => [...messages, ...response.data.messages]);
         // set up pusher

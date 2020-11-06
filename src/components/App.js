@@ -125,6 +125,7 @@ function App(props) {
           error.response = response;
           throw error;
         }
+        console.log(json.data);
         setMessages([]);
         setIsSubmitting(false);
         setConversation(json.data.conversation);

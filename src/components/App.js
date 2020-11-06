@@ -327,7 +327,8 @@ function App(props) {
   }
 
   function handleEnableChatPrompt() {
-    const promptDisabled = localStorage.getItem('stu_chat_prompt_disabled')
+    const promptDisabled = localStorage.getItem('stu_chat_prompt_disabled');
+    console.log(promptDisabled);
     if (promptDisabled) {
       return;
     }

@@ -54,7 +54,7 @@ function ChatWindow(props) {
   const classes = useStyles(props);
 
   useEffect(() => {
-    if (props.conversation.active && props.conversation.accepted == 0) {
+    if (props.conversation && props.conversation.active && props.conversation.accepted == 0) {
       const timer = setInterval(() => {
         props.setConversationToClosed();
       }, 10000);

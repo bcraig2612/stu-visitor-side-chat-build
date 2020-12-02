@@ -1,6 +1,7 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
 import moment from "moment";
+import Linkify from 'react-linkify';
 
 const useStyles = makeStyles((theme) => ({
   message: props => ({
@@ -51,6 +52,13 @@ function Message(props) {
   return (
     <div className={classes.conversationItem}>
       <div className={classes.bubble}>
+        <Linkify
+          componentDecorator={(decoratedHref, decoratedText, key) => (
+            <a target="_blank" href={decoratedHref} key={key}>
+              {decoratedText}
+            </a>
+          )}
+        >
         {props.message.body.split('\n').map(function(item, key) {
           return (
             <span key={key}>
@@ -59,6 +67,7 @@ function Message(props) {
             </span>
           )
         })}
+        </Linkify>
       </div>
       <div className={classes.timeStamp}>{props.message.error ? 'Error sending message' : sent}</div>
     </div>

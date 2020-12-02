@@ -28,10 +28,11 @@ function ContactRequestForm(props) {
   const classes = useStyles();
   const { register, setError, handleSubmit, errors } = useForm();
   const [value, setValue] = useState('');
+  const [message, setMessage] = useState('');
 
   const onSubmit = values => {
     if (values.contactMethod === "email") {
-      props.smsOptIn('email', values.name);
+      props.smsOptIn('email', values.name, values.message);
       return;
     } else {
       const phoneNumber = parsePhoneNumberFromString(values.name, 'US');
@@ -39,7 +40,7 @@ function ContactRequestForm(props) {
       if (phoneNumber) {
         if (phoneNumber.isValid()) {
           // submit form
-          props.smsOptIn(values.contactMethod, phoneNumber.number);
+          props.smsOptIn(values.contactMethod, phoneNumber.number, values.message);
           return;
         }
       }
@@ -74,6 +75,11 @@ function ContactRequestForm(props) {
     setValue(value);
   }
 
+  const onMessageChange = event => {
+    const { value } = event.target;
+    setMessage(value);
+  }
+
   let content;
 
   if (props.conversation.active === 0 && props.showSendTextForm && (props.phoneContactType === 'sms' || props.phoneContactType === 'call')) {
@@ -102,7 +108,22 @@ function ContactRequestForm(props) {
             value={value}
             onChange={onType}
           />
-
+          <TextField
+            inputProps={{ 'name': 'message', maxLength: 320 }}
+            inputRef={register({
+              maxLength: 320,
+            })}
+            fullWidth={true}
+            className={classes.chatFormInput}
+            label="Message (optional)"
+            variant="outlined"
+            error={!!errors.message}
+            aria-invalid={errors.message ? "true" : "false"}
+            helperText={errors.message ? errors.message.message : ''}
+            value={message}
+            onChange={onMessageChange}
+            style={{marginTop: "10px"}}
+          />
           <Button
             style={{marginTop: "10px"}}
             disabled={props.smsOptInSubmitting}
@@ -146,6 +167,22 @@ function ContactRequestForm(props) {
             helperText={errors.name ? errors.name.message : ''}
             value={value}
             onChange={onType}
+          />
+          <TextField
+            inputProps={{ 'name': 'message', maxLength: 320 }}
+            inputRef={register({
+              maxLength: 320,
+            })}
+            fullWidth={true}
+            className={classes.chatFormInput}
+            label="Message (optional)"
+            variant="outlined"
+            error={!!errors.message}
+            aria-invalid={errors.message ? "true" : "false"}
+            helperText={errors.message ? errors.message.message : ''}
+            value={message}
+            onChange={onMessageChange}
+            style={{marginTop: "10px"}}
           />
           <Button
             style={{marginTop: "10px"}}

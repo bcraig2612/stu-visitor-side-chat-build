@@ -290,6 +290,19 @@ function App(props) {
           if (data.clientIdentifier === clientIdentifier) {
             return false;
           }
+
+          if (data.automated_message === 1) {
+            setShowTypingIndicator(true);
+            setTimeout(() => {
+              // waiting
+              newMessageAlert();
+              setChatClosed(false);
+              setShowTypingIndicator(false);
+              setMessages(messages => [...messages, {id: Date.now(), sent_by_contact: data.sent_by_contact, body: data.body, sent: data.sent}]);
+            }, 3000);
+            return;
+          }
+
           newMessageAlert();
           setChatClosed(false);
           setShowTypingIndicator(false);

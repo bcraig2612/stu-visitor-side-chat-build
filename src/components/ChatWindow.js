@@ -97,7 +97,7 @@ function ChatWindow(props) {
             ) }
 
             {(props.accessToken.length > 0 && (props.conversation.active == 1) && (props.conversation.accepted == 0)) && (
-              <div className={classes.title}><CircularProgress size={20} color="inherit" /> <span style={{marginLeft: "10px"}}>Live Chat</span></div>
+              <div className={classes.title}><CircularProgress size={20} color="inherit" /> <span style={{marginLeft: "10px"}}>Receptionist</span></div>
             ) }
 
             <CloseIcon className={classes.headerAction} onClick={() => props.handleChatWindowToggle(true)}  />

@@ -272,7 +272,19 @@ function App(props) {
       .then(response => {
         setIsLoadingConversation(false);
         setConversation(response.data.conversation);
-        setMessages(messages => [...messages, ...response.data.messages]);
+        if (response.data.messages.length === 1) {
+          setShowTypingIndicator(true);
+          setTimeout(() => {
+            // waiting
+            newMessageAlert();
+            setChatClosed(false);
+            setShowTypingIndicator(false);
+            setMessages(messages => [...messages, ...response.data.messages]);
+
+          }, 3000);
+        } else {
+          setMessages(messages => [...messages, ...response.data.messages]);
+        }
         // set up pusher
         Pusher.logToConsole = false;
         pusher = new Pusher('a3105b52df63262dc19e', {

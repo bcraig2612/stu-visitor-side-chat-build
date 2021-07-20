@@ -76,7 +76,7 @@ function StartChatForm(props) {
           errorMessages={["Please enter your name."]}
           aria-invalid={errors.name ? "true" : "false"}
         />
-        { !props.validationEmail ?
+        { props.validationEmail ?
         <TextValidator
           inputRef={register}
           onChange={handleValidationEmailChange}

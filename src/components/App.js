@@ -23,7 +23,7 @@ function newMessageAlert() {
 let pusher = null;
 
 function App(props) {
-  const isIframe = window.location === window.parent.location;
+  const isIframe = window.location !== window.parent.location;
   const [chatClosed, setChatClosed] = useState(isIframe);
   const [showPrompt, setShowPrompt] = useState(false);
   const [composeMessageValue, setComposeMessageValue] = useState('');

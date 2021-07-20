@@ -63,7 +63,7 @@ function ChatWindow(props) {
         clearInterval(timer);
       };
     }
-  }, [props.conversation]);
+  }, [props, props.conversation]);
 
   let content = (
       <div className={classes.chatWindow}>
@@ -73,7 +73,7 @@ function ChatWindow(props) {
         </div>
         <WaitingOnAgent closeWindow={() => props.handleChatWindowToggle(true)} />
 
-        {!props.accessToken && <StartChatForm isSubmitting={props.isSubmitting} onStartChatFormSubmit={props.onStartChatFormSubmit} />}
+        {!props.accessToken && <StartChatForm validationEmail={props.widgetConfig.require_contact_info_to_start ? props.widgetConfig.require_contact_info_to_start : ""} isSubmitting={props.isSubmitting} onStartChatFormSubmit={props.onStartChatFormSubmit} />}
         {props.accessToken && <Messages isLoadingConversation={props.isLoadingConversation} messages={props.messages} />}
         {props.accessToken && <Footer handleNewMessage={props.handleNewMessage} composeMessageValue={props.composeMessageValue} handleComposeMessageChange={props.handleComposeMessageChange} />}
       </div>
@@ -104,7 +104,7 @@ function ChatWindow(props) {
           </div>
           {props.accessToken.length > 0 && (props.conversation.active == 0) && (props.conversation.accepted == 1) && <ChatComplete handleInvalidToken={props.handleInvalidToken} />}
           {/*{props.accessToken.length > 0 && (props.conversation.accepted == 0) && <WaitingOnAgent handleInvalidToken={props.handleInvalidToken} setConversationToClosed={props.setConversationToClosed} smsOptInSubmitting={props.smsOptInSubmitting} smsOptIn={props.smsOptIn} reloadConversation={props.reloadConversation} conversation={props.conversation} closeWindow={() => props.handleChatWindowToggle(true)} />}*/}
-          {!props.accessToken.length > 0 && <StartChatForm formError={props.formError} isSubmitting={props.isSubmitting} onStartChatFormSubmit={props.onStartChatFormSubmit} />}
+          {!props.accessToken.length > 0 && <StartChatForm validationEmail={props.widgetConfig.require_contact_info_to_start ? props.widgetConfig.require_contact_info_to_start : ""} formError={props.formError} isSubmitting={props.isSubmitting} onStartChatFormSubmit={props.onStartChatFormSubmit} />}
           {props.accessToken.length > 0 && (props.conversation.active == 1 || (props.conversation.active == 0 && props.conversation.accepted == 0)) && <Messages handleInvalidToken={props.handleInvalidToken} conversation={props.conversation} showTypingIndicator={props.showTypingIndicator} isLoadingConversation={props.isLoadingConversation} messages={props.messages} smsOptInSubmitting={props.smsOptInSubmitting} smsOptIn={props.smsOptIn} />}
           {props.accessToken.length > 0 && (props.conversation.active == 1) && <Footer handleNewMessage={props.handleNewMessage} composeMessageValue={props.composeMessageValue} handleComposeMessageChange={props.handleComposeMessageChange} />}
         </div>

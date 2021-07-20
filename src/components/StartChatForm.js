@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {makeStyles} from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { ReCaptcha } from "./Recaptcha";
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Link } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
-import {ReCaptcha} from "./Recaptcha";
-import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
   startChatForm: {
@@ -19,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center"
   },
   chatFormInput: {
-    marginBottom: "10px",
+    marginBottom: "10px"
   },
   recaptchaText: {
     fontSize: ".9em",
@@ -29,45 +28,78 @@ const useStyles = makeStyles((theme) => ({
 
 function StartChatForm(props) {
   const classes = useStyles();
-  const [token, setToken] = useState('');
-  const { handleSubmit, errors, register, setValue } = useForm({
-    mode: 'onChange'
+
+  const [name, setName] = useState("");
+  const [validationEmail, setValidationEmail] = useState("");
+  const [token, setToken] = useState("");
+
+  const { handleSubmit, register, errors, setValue } = useForm({
+    mode: "onChange",
   });
 
-  const onSubmit = values => {
+  const onSubmit = (values) => {
     props.onStartChatFormSubmit(values);
-    setToken('');
-  }
+    setToken("");
+  };
+
+  const handleValidationEmailChange = (event) => {
+    setValidationEmail(event.target.value);
+  };
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
 
   const onVerifyCaptcha = (token) => {
-    setValue('captchaToken', token);
+    setValue("captchaToken", token);
   };
 
   useEffect(() => {
-    register({ name: 'captchaToken' }, { required: true });
+    register({ name: "captchaToken" }, { required: true });
   });
 
   return (
     <div className={classes.startChatForm}>
       <p>Fill out the form to start chatting!</p>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          inputProps={{ 'name': 'name', maxLength: 70 }}
-          inputRef={register({
-            required: "Required",
-            minLength: 1,
-            maxLength: 70
-          })}
+      <ValidatorForm onSubmit={handleSubmit(onSubmit)}>
+        <TextValidator
+          inputProps={{ name: "name", maxLength: 70 }}
+          inputRef={register}
+          onChange={handleNameChange}
+          label="Name"
+          value={name}
+          id="outlined-basic"
+          name="name"
           fullWidth={true}
           className={classes.chatFormInput}
-          id="outlined-basic"
-          label="Name"
           variant="outlined"
-          error={!!errors.name}
+          validators={["required"]}
+          errorMessages={["Please enter your name."]}
           aria-invalid={errors.name ? "true" : "false"}
-          helperText={errors.name ? 'Please enter your name.' : ''}
         />
-        <ReCaptcha token={token} setToken={setToken} onVerifyCaptcha={onVerifyCaptcha} />
+        { props.validationEmail ?
+        <TextValidator
+          inputRef={register}
+          onChange={handleValidationEmailChange}
+          label="Email"
+          value={validationEmail}
+          id="validationEmail"
+          name="validationEmail"
+          fullWidth={true}
+          className={classes.chatFormInput}
+          variant="outlined"
+          validators={["required", "isEmail"]}
+          errorMessages={[
+            "Please enter your email address.",
+            "Email is not valid.",
+          ]}
+          aria-invalid={errors.validationEmail ? "true" : "false"}
+        />
+        : ""}
+        <ReCaptcha
+          token={token}
+          setToken={setToken}
+          onVerifyCaptcha={onVerifyCaptcha}
+        />
 
         <Button
           disabled={props.isSubmitting || token === ""}
@@ -75,14 +107,27 @@ function StartChatForm(props) {
           size="large"
           fullWidth={true}
           variant="contained"
-          color="primary">{props.isSubmitting ? 'Loading..' : 'Start Chat'}</Button>
-        {props.formError && <Alert severity="error" style={{width: "100%", marginTop: "10px"}}>{props.formError}</Alert>}
+          color="primary"
+        >
+          {props.isSubmitting ? "Loading.." : "Start Chat"}
+        </Button>
+        {props.formError && (
+          <Alert severity="error" style={{ width: "100%", marginTop: "10px" }}>
+            {props.formError}
+          </Alert>
+        )}
         <p className={classes.recaptchaText}>
           This site is protected by reCAPTCHA and the Google
-          <Link href="https://policies.google.com/privacy" target="_blank"> Privacy Policy</Link> and
-          <Link href="https://policies.google.com/terms" target="_blank"> Terms of Service</Link> apply.
+          <Link href="https://policies.google.com/privacy" target="_blank">
+            Privacy Policy
+          </Link>
+          and
+          <Link href="https://policies.google.com/terms" target="_blank">
+            Terms of Service
+          </Link>
+          apply.
         </p>
-      </form>
+      </ValidatorForm>
     </div>
   );
 }

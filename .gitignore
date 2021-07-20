@@ -18,11 +18,10 @@
 .env.test.local
 .env.production.local
 .env
+.vscode
 
 /.idea
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-.vercel

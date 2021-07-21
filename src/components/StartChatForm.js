@@ -1,30 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ReCaptcha } from "./Recaptcha";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { makeStyles } from "@material-ui/core/styles";
+import { ReCaptcha } from "./Recaptcha";
+import useStyles from "./styles/StartChatForm.styles";
 import { Button, Link } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
-
-const useStyles = makeStyles((theme) => ({
-  startChatForm: {
-    flex: "1",
-    backgroundColor: "#fff",
-    padding: "10px",
-    overflowY: "scroll",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  chatFormInput: {
-    marginBottom: "10px"
-  },
-  recaptchaText: {
-    fontSize: ".9em",
-    color: "#585858"
-  }
-}));
 
 function StartChatForm(props) {
   const classes = useStyles();

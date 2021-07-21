@@ -1,20 +1,9 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
+import useStyles from "./styles/Footer.styles";
 import TextField from "@material-ui/core/TextField";
 import Fab from "@material-ui/core/Fab";
 import SendIcon from "@material-ui/icons/Send";
-import {makeStyles} from "@material-ui/core/styles";
 
-const useStyles = makeStyles((theme) => ({
-  footer: {
-    display: "flex",
-    padding: "10px",
-    background: "#fff",
-    alignItems: "center"
-  },
-  composeMessage: {
-    flex: "1"
-  }
-}));
 
 function Footer(props) {
   const classes = useStyles();

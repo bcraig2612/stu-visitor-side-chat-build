@@ -1,30 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import {makeStyles} from "@material-ui/core/styles";
+import { useForm } from "react-hook-form";
+import { parsePhoneNumberFromString, AsYouType } from 'libphonenumber-js';
+import useStyles from './styles/WaitingOnAgent.styles';
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import { useForm } from "react-hook-form";
 import Alert from "@material-ui/lab/Alert";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import { parsePhoneNumberFromString, AsYouType } from 'libphonenumber-js';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-
-const useStyles = makeStyles((theme) => ({
-  startChatForm: {
-    flex: "1",
-    backgroundColor: "#fff",
-    padding: "10px",
-    overflowY: "scroll",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  waitingText: {
-    fontSize: "1.1em",
-    textAlign: "center"
-  }
-}));
 
 function WaitingOnAgent(props) {
   const classes = useStyles();
@@ -44,7 +27,7 @@ function WaitingOnAgent(props) {
         clearInterval(timer);
       };
     }
-  }, [props.conversation]);
+  }, [props, props.conversation]);
 
   const onSubmit = values => {
     const phoneNumber = parsePhoneNumberFromString(values.name, 'US');

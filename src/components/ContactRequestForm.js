@@ -1,28 +1,11 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { AsYouType, parsePhoneNumberFromString } from "libphonenumber-js";
+import useStyles from "./styles/ContactRequestForm.styles";
 import Button from "@material-ui/core/Button";
-import {makeStyles} from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Alert from "@material-ui/lab/Alert";
-import {AsYouType, parsePhoneNumberFromString} from "libphonenumber-js";
-import {useForm} from "react-hook-form";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
-
-const useStyles = makeStyles((theme) => ({
-  startChatForm: {
-    flex: "1",
-    backgroundColor: "#fff",
-    padding: "10px",
-    overflowY: "scroll",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  waitingText: {
-    fontSize: "1.1em",
-    textAlign: "center"
-  }
-}));
 
 function ContactRequestForm(props) {
   const classes = useStyles();

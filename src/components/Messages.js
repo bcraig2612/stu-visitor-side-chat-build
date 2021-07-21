@@ -1,23 +1,12 @@
 import React, {useEffect, useRef, useState} from "react";
-import {makeStyles} from "@material-ui/core/styles";
-import Message from "./Message";
-import Skeleton from "@material-ui/lab/Skeleton";
-import TypingIndicator from "./TypingIndicator";
 import moment from "moment";
+import Message from "./Message";
+import ContactRequestForm from "./ContactRequestForm";
+import TypingIndicator from "./TypingIndicator";
+import useStyles from "./styles/Messages.styles";
+import Skeleton from "@material-ui/lab/Skeleton";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
-import ContactRequestForm from "./ContactRequestForm";
-
-const useStyles = makeStyles((theme) => ({
-  messages: {
-    flex: "1",
-    backgroundColor: "#fff",
-    padding: "10px",
-    overflowY: "scroll",
-    display: "flex",
-    flexDirection: "column"
-  },
-}));
 
 function Messages(props) {
   // reference for end of message container

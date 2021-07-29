@@ -57,23 +57,23 @@ function StartChatForm(props) {
           aria-invalid={errors.name ? "true" : "false"}
         />
         { !props.validationEmail ?
-        <TextValidator
-          inputRef={register}
-          onChange={handleValidationEmailChange}
-          label="Email"
-          value={validationEmail}
-          id="validationEmail"
-          name="validationEmail"
-          fullWidth={true}
-          className={classes.chatFormInput}
-          variant="outlined"
-          validators={["required", "isEmail"]}
-          errorMessages={[
-            "Please enter your email address.",
-            "Email is not valid.",
-          ]}
-          aria-invalid={errors.validationEmail ? "true" : "false"}
-        />
+          <TextValidator
+            inputRef={register}
+            onChange={handleValidationEmailChange}
+            label="Email"
+            value={validationEmail}
+            id="validationEmail"
+            name="validationEmail"
+            fullWidth={true}
+            className={classes.chatFormInput}
+            variant="outlined"
+            validators={["required", "isEmail"]}
+            errorMessages={[
+              "Please enter your email address.",
+              "Email is not valid.",
+            ]}
+            aria-invalid={errors.validationEmail ? "true" : "false"}
+          />
         : ""}
         <ReCaptcha
           token={token}

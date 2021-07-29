@@ -46,7 +46,7 @@ function App(props) {
       loadConversation(jwt);
     }
 
-  }, [accessToken, loadConversation, storedConversationID]);
+  }, [accessToken, storedConversationID]);
 
   useEffect(() => {
     if (window.addEventListener) {
@@ -357,7 +357,7 @@ function App(props) {
 
   function handleEnableChatPrompt() {
     const promptDisabled = localStorage.getItem('stu_chat_prompt_disabled');
-    console.log(promptDisabled);
+    // console.log(promptDisabled);
     if (promptDisabled) {
       return;
     }

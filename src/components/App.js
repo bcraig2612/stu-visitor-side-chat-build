@@ -46,6 +46,7 @@ function App(props) {
       loadConversation(jwt);
     }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, storedConversationID]);
 
   useEffect(() => {
@@ -74,6 +75,7 @@ function App(props) {
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
   function getLocalStorage(key) {
     return localStorage.getItem(key);
   }
@@ -100,6 +102,7 @@ function App(props) {
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
   function setLocalStorage(key, value, action) {
     const msg = JSON.stringify({'action': action, 'key': key, 'value': value});
     window.parent.postMessage(msg, "*")
@@ -253,6 +256,7 @@ function App(props) {
   function loadConversation(jwt, conversationID) {
     conversationID = storedConversationID;
     if (conversationID) {
+      // eslint-disable-next-line no-self-assign
       conversationID = conversationID;
     }
 
@@ -287,7 +291,7 @@ function App(props) {
         }
         // set up pusher
         Pusher.logToConsole = false;
-        pusher = new Pusher('a3105b52df63262dc19e', {
+        pusher = new Pusher('e9f1648efd7db967196d', {
           cluster: 'us3',
           authEndpoint: apiURL + 'pusherAuthentication/',
           auth: {

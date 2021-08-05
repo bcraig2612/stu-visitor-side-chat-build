@@ -99,11 +99,11 @@ function StartChatForm(props) {
         <p className={classes.recaptchaText}>
           This site is protected by reCAPTCHA and the Google
           <Link href="https://policies.google.com/privacy" target="_blank">
-            Privacy Policy
+            &nbsp;Privacy Policy&nbsp;
           </Link>
           and
           <Link href="https://policies.google.com/terms" target="_blank">
-            Terms of Service
+            &nbsp;Terms of Service&nbsp;
           </Link>
           apply.
         </p>

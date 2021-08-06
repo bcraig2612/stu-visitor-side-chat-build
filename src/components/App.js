@@ -291,7 +291,7 @@ function App(props) {
         }
         // set up pusher
         Pusher.logToConsole = false;
-        pusher = new Pusher('e9f1648efd7db967196d', {
+        pusher = new Pusher('a3105b52df63262dc19e', {
           cluster: 'us3',
           authEndpoint: apiURL + 'pusherAuthentication/',
           auth: {

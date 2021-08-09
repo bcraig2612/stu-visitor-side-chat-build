@@ -9,7 +9,8 @@ import ChatPrompt from "./ChatPrompt";
 // this will identify the client we are on
 // so we don't show duplicate messages from pusher
 const clientIdentifier = Date.now();
-const apiURL = process.env.REACT_APP_API_URL;
+const apiURL = process.env.NODE_ENV === "production" ? process.env.REACT_APP_STU_PROD_API_URL : process.env.REACT_APP_STU_DEV_API_URL;
+const pusherKey = process.env.NODE_ENV === "production" ? process.env.REACT_APP_STU_PROD_PUSHER_API_KEY : process.env.REACT_APP_STU_DEV_PUSHER_API_KEY;
 
 // play alert sound
 function newMessageAlert() {
@@ -23,7 +24,7 @@ function newMessageAlert() {
 let pusher = null;
 
 function App(props) {
-  const isIframe = window.location !== window.parent.location;
+  const isIframe = window.location === window.parent.location;
   const [chatClosed, setChatClosed] = useState(isIframe);
   const [showPrompt, setShowPrompt] = useState(false);
   const [composeMessageValue, setComposeMessageValue] = useState('');
@@ -128,7 +129,7 @@ function App(props) {
           error.response = response;
           throw error;
         }
-        console.log(json.data);
+        // console.log(json.data);
         setMessages([]);
         setIsSubmitting(false);
         setConversation(json.data.conversation);
@@ -291,7 +292,7 @@ function App(props) {
         }
         // set up pusher
         Pusher.logToConsole = false;
-        pusher = new Pusher('a3105b52df63262dc19e', {
+        pusher = new Pusher(pusherKey, {
           cluster: 'us3',
           authEndpoint: apiURL + 'pusherAuthentication/',
           auth: {

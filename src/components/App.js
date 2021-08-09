@@ -9,8 +9,9 @@ import ChatPrompt from "./ChatPrompt";
 // this will identify the client we are on
 // so we don't show duplicate messages from pusher
 const clientIdentifier = Date.now();
-const apiURL = process.env.NODE_ENV === "production" ? process.env.REACT_APP_STU_PROD_API_URL : process.env.REACT_APP_STU_DEV_API_URL;
-const pusherKey = process.env.NODE_ENV === "production" ? process.env.REACT_APP_STU_PROD_PUSHER_API_KEY : process.env.REACT_APP_STU_DEV_PUSHER_API_KEY;
+
+const apiURL = process.env.REACT_APP_STU_API_URL;
+const pusherKey = process.env.REACT_APP_STU_PUSHER_API_KEY;
 
 // play alert sound
 function newMessageAlert() {
@@ -24,7 +25,7 @@ function newMessageAlert() {
 let pusher = null;
 
 function App(props) {
-  const isIframe = window.location === window.parent.location;
+  const isIframe = window.location !== window.parent.location;
   const [chatClosed, setChatClosed] = useState(isIframe);
   const [showPrompt, setShowPrompt] = useState(false);
   const [composeMessageValue, setComposeMessageValue] = useState('');

@@ -5,7 +5,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import App from "./App";
 import createTheme from "@material-ui/core/styles/createTheme";
 
-const apiURL = process.env.NODE_ENV === "production" ? process.env.REACT_APP_STU_PROD_API_URL : process.env.REACT_APP_STU_DEV_API_URL;
+const apiURL = process.env.REACT_APP_STU_API_URL;
 
 export default function Widget(props) {
   const { uid } = useParams();

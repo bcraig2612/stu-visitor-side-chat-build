@@ -9,6 +9,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "env-cmd": "^10.1.0",
     "fontsource-roboto": "^3.0.3",
     "libphonenumber-js": "^1.8.4",
     "material-ui": "^1.0.0-beta.47",
@@ -26,8 +27,9 @@
     "validator": "^13.1.17"
   },
   "scripts": {
-    "start": "set PORT=3001 && react-scripts start",
-    "build": "react-scripts build",
+    "start": "set PORT=3001 && env-cmd -f .env.staging react-scripts start",
+    "build:staging": "env-cmd -f .env.staging react-scripts build",
+    "build:production": "env-cmd -f .env.prod react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

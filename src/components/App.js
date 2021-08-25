@@ -22,6 +22,19 @@ function newMessageAlert() {
   });
 }
 
+//================================ADDED 08/24/2021==============================
+function storageTest() {
+  let test = 'test';
+  try {
+      localStorage.setItem(test, test);
+      localStorage.removeItem(test);
+      return true;
+  } catch( e ) {
+      return false;
+  }
+}
+//==============================================================================
+
 let pusher = null;
 
 function App(props) {
@@ -109,6 +122,33 @@ function App(props) {
     const msg = JSON.stringify({'action': action, 'key': key, 'value': value});
     window.parent.postMessage(msg, "*")
   }
+
+  // function visitorLeftCloseConversation() {
+  //   localStorage.clear();
+  //   if (!conversation.id) {
+  //     return;
+  //   }
+  //   const requestData = { conversationID: conversation.id };
+  //   fetch(apiURL + "visitorLeftCloseConversation/", {
+  //     method: "POST",
+  //     withCredentials: true,
+  //     headers: {
+  //       "Authorization": "Bearer " + accessToken,
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(requestData),
+  //   })
+  //     .then((response) => Promise.all([response, response.json()]))
+  //     .then(([response, json]) => {
+  //       if (response.status < 200 || response.status >= 300) {
+  //         let error = new Error(json.message);
+  //         error.response = response;
+  //         throw error;
+  //       }
+  //       setConversation(json.data.conversation);
+  //     })
+  //     .catch(function (ex) {});
+  // }
 
   function onStartChatFormSubmit(values) {
     handleInvalidToken();
@@ -245,14 +285,20 @@ function App(props) {
         updatedMessages[foundIndex].error = true;
         setMessages(updatedMessages);
       });
-
   }
 
   // if token is invalid clear localStorage and refresh window
   function handleInvalidToken() {
-    localStorage.clear();
-    setStoredConversationID(null);
-    setAccessToken('');
+    //================================ADDED 08/24/2021==============================
+    if ( storageTest() === true ) {
+    //==============================================================================
+      // available
+      localStorage.clear();
+      setStoredConversationID(null);
+      setAccessToken('');
+    } else {
+      return null;
+    }
   }
 
   function loadConversation(jwt, conversationID) {
@@ -362,15 +408,22 @@ function App(props) {
   }
 
   function handleEnableChatPrompt() {
-    const promptDisabled = localStorage.getItem('stu_chat_prompt_disabled');
-    // console.log(promptDisabled);
-    if (promptDisabled) {
-      return;
+    //================================ADDED 08/24/2021==============================
+    if ( storageTest() === true ) {
+    //==============================================================================
+      //available
+      const promptDisabled = localStorage.getItem('stu_chat_prompt_disabled');
+      if ( promptDisabled ) {
+        return;
+      }
+    } else {
+     //unavailable
+     return null;
     }
 
-    // ignore if chat window is open
+    //ignore if chat window is open
     let updatedState
-    setChatClosed(currentState=>{    // Do not change the state by get the updated state
+    setChatClosed(currentState=>{    //Do not change the state by get the updated state
       updatedState = currentState;
       return currentState
     })
@@ -434,6 +487,7 @@ function App(props) {
         reloadConversation={reloadConversation}
         smsOptIn={smsOptIn}
         smsOptInSubmitting={smsOptInSubmitting}
+        // visitorLeftCloseConversation={visitorLeftCloseConversation}
         setConversationToClosed={setConversationToClosed}
         handleInvalidToken={handleInvalidToken}
         showTypingIndicator={showTypingIndicator}

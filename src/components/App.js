@@ -123,33 +123,6 @@ function App(props) {
     window.parent.postMessage(msg, "*")
   }
 
-  // function visitorLeftCloseConversation() {
-  //   localStorage.clear();
-  //   if (!conversation.id) {
-  //     return;
-  //   }
-  //   const requestData = { conversationID: conversation.id };
-  //   fetch(apiURL + "visitorLeftCloseConversation/", {
-  //     method: "POST",
-  //     withCredentials: true,
-  //     headers: {
-  //       "Authorization": "Bearer " + accessToken,
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(requestData),
-  //   })
-  //     .then((response) => Promise.all([response, response.json()]))
-  //     .then(([response, json]) => {
-  //       if (response.status < 200 || response.status >= 300) {
-  //         let error = new Error(json.message);
-  //         error.response = response;
-  //         throw error;
-  //       }
-  //       setConversation(json.data.conversation);
-  //     })
-  //     .catch(function (ex) {});
-  // }
-
   function onStartChatFormSubmit(values) {
     handleInvalidToken();
     setIsSubmitting(true);

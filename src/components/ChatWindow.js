@@ -12,7 +12,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 
 function ChatWindow(props) {
 	const classes = useStyles(props);
-	// const [activeToggle, setActiveToggle] = useState(0);
 
 	useEffect(() => {
 		if (
@@ -29,69 +28,6 @@ function ChatWindow(props) {
 			};
 		}
 	}, [props, props.conversation]);
-
-	// useEffect(() => {
-	// 	if (
-	// 		!isEmpty(props.conversation) &&
-	// 		props.conversation.active === 1 &&
-	// 		activeToggle !== 1
-	// 	) {
-	// 		setActiveToggle(1);
-	// 	}
-	// }, [activeToggle, props.conversation]);
-
-	// useEffect(() => {
-	// 	if (
-	// 		activeToggle === 1 &&
-	// 		!props.conversation.deactivated_timestamp &&
-	// 		props.conversation.accepted
-	// 	) {
-	// 		document.addEventListener("visibilitychange", inactiveVisitor);
-	// 	}
-	// 	return () => {
-	// 		if (
-	// 			activeToggle === 1 &&
-	// 			!props.conversation.deactivated_timestamp &&
-	// 			props.conversation.accepted
-	// 		) {
-	// 			document.addEventListener("visibilitychange", inactiveVisitor);
-	// 		}
-	// 	};
-	// });
-
-	// useEffect(() => {
-	// 	if (
-	// 		activeToggle === 1 &&
-	// 		!props.conversation.deactivated_timestamp &&
-	// 		props.conversation.accepted == 1
-	// 	) {
-	// 		window.addEventListener("beforeunload", (e) => {
-	// 			// e.preventDefault();
-	// 			inactiveVisitor();
-	// 		});
-	// 	}
-	// 	return () => {
-	// 		if (
-	// 			activeToggle === 1 &&
-	// 			!props.conversation.deactivated_timestamp &&
-	// 			props.conversation.accepted == 1
-	// 		) {
-	// 			window.addEventListener("beforeunload", (e) => {
-	// 				// e.preventDefault();
-	// 				inactiveVisitor();
-	// 			});
-	// 		}
-	// 	};
-	// });
-
-	// function inactiveVisitor(e) {
-	// 	setActiveToggle(0);
-	// 	props.visitorLeftCloseConversation();
-	// }
-
-	// function isEmpty(obj) {
-	// 	return Object.keys(obj).length === 0;
-	// }
 
 	let content = (
 		<div className={classes.chatWindow}>
